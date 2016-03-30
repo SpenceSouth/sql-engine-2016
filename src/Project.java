@@ -57,22 +57,43 @@ public class Project {
             throws FileNotFoundException, UnsupportedEncodingException, InterruptedException {
         System.out.println("Starting SQL Engine!\n");
 
-        // loop forever
-        while (true) {
-            // get the input from the user
-            capture_input();
-
-            // checks how many commands where given and separates them so they
-            // execute sequentially and separately
-            split_commands();
-
-            // make sure that there were actual commands parsed
-            if (commands.size() != 0) {
-                // loop through each command, begin processing
-                process();
+        // Runs the program in console mode
+        if (args.length == 0) {
+            while (true) {
+                // get the input from the user
+                capture_input();
+                acceptInput();
             }
         }
+        // Hook to allow unit testing.  Must specify database as arg 0, command as arg 1
+        else {
+            // They use a global var to catch input.... Might want to refactor this later.  Not sure what it might break.
+            input = clean("LOAD " + args[0]);
+            acceptInput();
 
+            // They use a global var to catch input.... Might want to refactor this later.  Not sure what it might break.
+            input = clean(args[1] + ";");
+            acceptInput();
+        }
+
+    }
+
+    // Removed duplicate code
+    private static void acceptInput(){
+
+        // checks how many commands where given and separates them so they
+        // execute sequentially and separately
+        split_commands();
+
+        // make sure that there were actual commands parsed
+        if (commands.size() != 0) {
+            // loop through each command, begin processing
+            try {
+                process();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // process each command
