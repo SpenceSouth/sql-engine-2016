@@ -65,13 +65,22 @@ public class Project {
                 acceptInput();
             }
         }
+        else if (args.length == 1){
+            // Used to create a database
+            input = clean(args[0]);
+            acceptInput();
+
+            // Save the input
+            input = clean("save;");
+            acceptInput();
+
+        }
         // Hook to allow unit testing.  Must specify database as arg 0, command as arg 1
         else {
             // They use a global var to catch input.... Might want to refactor this later.  Not sure what it might break.
             input = clean("LOAD " + args[0]);
             acceptInput();
 
-            // They use a global var to catch input.... Might want to refactor this later.  Not sure what it might break.
             input = clean(args[1] + ";");
             acceptInput();
         }
@@ -2433,9 +2442,14 @@ public class Project {
             // can only do this command if we're working on an active database
 
             Database.tables.put(table_name, new Table());
-            for (int i = 0; i < temp1.size(); i++)
+            for (int i = 0; i < temp1.size(); i++) {
                 Database.tables.get(table_name).columns
                         .add(new Column(temp1.get(i), temp2.get(i), temp3.get(i), temp4.get(i), temp5.get(i)));
+            }
+
+            // Confirmation needed for unit test
+            System.out.println("Successfully created table " + table_name);
+
         } else
             System.out.println("You are not working in an active database; please CREATE or LOAD a database.");
     }
@@ -2474,6 +2488,8 @@ public class Project {
                 Database.tables.get(table_name).records.get(Database.tables.get(table_name).records.size() - 1).cells
                         .set(get_column_index(temp6.get(i).column_name), temp2.get(i));
             }
+
+            System.out.println("Successfully inserted into " + table_name);
 
         } else
             System.out.println("You are not working in an active database; please CREATE or LOAD a database.");
