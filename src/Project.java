@@ -9,6 +9,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 //Group A1
 //COP 4710 - Data Modeling
@@ -179,35 +194,39 @@ public class Project {
             // if there are no errors
             // execute the command
             if (!is_parse_error() && !is_semantic_error()) {
-                // begin execution
-                if (display_debugger_stuff)
-                    System.out.println("COMMAND: " + command);
-                if (command.equals("LIST TABLES"))
-                    execute_list_tables();
-                else if (command.equals("CREATE DATABASE"))
-                    execute_create_database();
-                else if (command.equals("DROP DATABASE"))
-                    execute_drop_database();
-                else if (command.equals("SAVE"))
-                    execute_save();
-                else if (command.equals("LOAD"))
-                    execute_load_database();
-                else if (command.equals("CREATE TABLE"))
-                    execute_create_table();
-                else if (command.equals("DROP TABLE"))
-                    execute_drop_table();
-                else if (command.equals("INSERT"))
-                    execute_insert();
-                else if (command.equals("DELETE"))
-                    execute_delete();
-                else if (command.equals("UPDATE"))
-                    execute_update();
-                else if (command.equals("WUPDATE"))
-                    execute_update();
-                else if (command.equals("SELECT"))
-                    execute_select();
-                else
-                    System.out.println("ERROR! COMMAND NOT FOUND!");
+                try {
+                    // begin execution
+                    if (display_debugger_stuff)
+                        System.out.println("COMMAND: " + command);
+                    if (command.equals("LIST TABLES"))
+                        execute_list_tables();
+                    else if (command.equals("CREATE DATABASE"))
+                        execute_create_database();
+                    else if (command.equals("DROP DATABASE"))
+                        execute_drop_database();
+                    else if (command.equals("SAVE"))
+                        execute_save();
+                    else if (command.equals("LOAD"))
+                        execute_load_database();
+                    else if (command.equals("CREATE TABLE"))
+                        execute_create_table();
+                    else if (command.equals("DROP TABLE"))
+                        execute_drop_table();
+                    else if (command.equals("INSERT"))
+                        execute_insert();
+                    else if (command.equals("DELETE"))
+                        execute_delete();
+                    else if (command.equals("UPDATE"))
+                        execute_update();
+                    else if (command.equals("WUPDATE"))
+                        execute_update();
+                    else if (command.equals("SELECT"))
+                        execute_select();
+                    else
+                        System.out.println("ERROR! COMMAND NOT FOUND!");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
 
             System.out.println("");
@@ -2327,66 +2346,172 @@ public class Project {
         }
     }
 
-    public static void execute_save() throws FileNotFoundException, UnsupportedEncodingException {
-        if (Database.database_name != null) {
-            // can only do this command if we're working on an active database
-
-            // first we check if the database exists
-            File theDir = new File("databases");
-
-            // if the directory does not exist, create it
-            if (!theDir.exists()) {
-                try {
-                    theDir.mkdir();
-                } catch (SecurityException se) {
-                    // handle it
-                }
-            }
-
-            // create the file
-            // this will also overwrite the file
-            PrintWriter writer = new PrintWriter(directory_to + Database.database_name.toLowerCase(), "UTF-8");
-
-            // iterate through all tables
-            Enumeration<String> e = Database.tables.keys();
-            String t;
-            while (e.hasMoreElements()) {
-                t = e.nextElement();
-                writer.println(t); // name of the table
-                writer.println(Database.tables.get(t).columns.size()); // number
-                // of
-                // columns
-                // in
-                // the
-                // table
-                for (int i = 0; i < Database.tables.get(t).columns.size(); i++) {
-                    // iterate through each column
-                    // write to file
-                    writer.println(Database.tables.get(t).columns.get(i).column_name + DELIMITER
-                            + Database.tables.get(t).columns.get(i).column_type + DELIMITER
-                            + Database.tables.get(t).columns.get(i).restriction + DELIMITER
-                            + Database.tables.get(t).columns.get(i).restriction_2 + DELIMITER
-                            + Database.tables.get(t).columns.get(i).is_null_allowed);
-                }
-                for (int i = 0; i < Database.tables.get(t).records.size(); i++) {
-                    // iterate through each record
-                    // write to file
-                    String it = "";
-                    it += Database.tables.get(t).records.get(i).record_date;
-                    // now that we have the date
-                    // we need to iterate through each cell
-                    // and append to file
-                    for (int j = 0; j < Database.tables.get(t).records.get(i).cells.size(); j++) {
-                        it += DELIMITER + Database.tables.get(t).records.get(i).cells.get(j);
+    public static void execute_save() throws FileNotFoundException, UnsupportedEncodingException 
+    {
+        if (Database.database_name != null) 
+        {
+            try 
+            {
+                // can only do this command if we're working on an active database
+                
+                
+                DocumentBuilderFactory dbFactory =
+                        DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder =
+                        dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.newDocument();
+                
+                // first we check if the database exists
+                File theDir = new File("databases");
+                
+                // if the directory does not exist, create it
+                if (!theDir.exists()) {
+                    try {
+                        theDir.mkdir();
+                    } catch (SecurityException se)
+                    {
+                        // handle it
                     }
-                    // now we write it to file
-                    writer.println(it);
                 }
-                writer.println("");
-            }
+                
+                // create the file
+                // this will also overwrite the file
+                PrintWriter writer = new PrintWriter(directory_to + Database.database_name.toLowerCase(), "UTF-8");
+                
+                // iterate through all tables
+                Enumeration<String> e = Database.tables.keys();
+                String t;
+                while (e.hasMoreElements())
+                {
+                    t = e.nextElement();
+                    writer.println(t); // name of the table
+                    
+                    //xml writing
+                    Element rootElement = doc.createElement(t);
+                    Attr attrTableCount = doc.createAttribute("table_Column_Count");
+                    attrTableCount.setValue(""+Database.tables.get(t).columns.size());
+                    rootElement.setAttributeNode(attrTableCount);
+                    doc.appendChild(rootElement);
+                    
+                    //writing to a TEXT FILE
+                    writer.println(Database.tables.get(t).columns.size());
+                    // number
+                    // of
+                    // columns
+                    // in
+                    // the
+                    // table
+                    
+                    //writing to a TEXT FILE
+                    for (int i = 0; i < Database.tables.get(t).columns.size(); i++)
+                    {
+                        // write to file
+                        writer.println(Database.tables.get(t).columns.get(i).column_name + DELIMITER
+                                + Database.tables.get(t).columns.get(i).column_type + DELIMITER
+                                + Database.tables.get(t).columns.get(i).restriction + DELIMITER
+                                + Database.tables.get(t).columns.get(i).restriction_2 + DELIMITER
+                                + Database.tables.get(t).columns.get(i).is_null_allowed);
+                    }
+                    
+                    //writing to XML
+                    for (int i = 0; i < Database.tables.get(t).columns.size(); i++) 
+                    {
+                        // iterate through each column
+                        
+                        String columnName = Database.tables.get(t).columns.get(i).column_name;
+                        String columnType = Database.tables.get(t).columns.get(i).column_type;
+                        int restriction = Database.tables.get(t).columns.get(i).restriction;
+                        int restriction2 = Database.tables.get(t).columns.get(i).restriction_2;
+                        String isNullAllowed = Database.tables.get(t).columns.get(i).is_null_allowed;
+                        
+                        Element fieldName = doc.createElement(columnName);
+                        Attr attrType = doc.createAttribute("type");
+                        attrType.setValue(columnType);
+                        fieldName.setAttributeNode(attrType);
+                        
+                        Attr attrRest = doc.createAttribute("restriction");
+                        attrRest.setValue(restriction+"");
+                        fieldName.setAttributeNode(attrRest);
+                        
+                        Attr attrRest2 = doc.createAttribute("restriction_2");
+                        attrRest2.setValue(restriction2+"");
+                        fieldName.setAttributeNode(attrRest2);
+                        
+                        Attr attrNull = doc.createAttribute("is_null_allowed");
+                        attrNull.setValue(isNullAllowed);
+                        fieldName.setAttributeNode(attrNull);
+                        
+                        rootElement.appendChild(fieldName);
+                    }
+                    
+                    //write to TEXT FILE
+                    for (int i = 0; i < Database.tables.get(t).records.size(); i++)
+                    {
+                        // iterate through each record
+                        // write to file
+                        String it = "";
+                        it += Database.tables.get(t).records.get(i).record_date;
+                        // now that we have the date
+                        // we need to iterate through each cell
+                        // and append to file
+                        for (int j = 0; j < Database.tables.get(t).records.get(i).cells.size(); j++) {
+                            it += DELIMITER + Database.tables.get(t).records.get(i).cells.get(j);
+                        }
+                        // now we write it to file
+                        writer.println(it);
+                    }
+                    
+                    //Write to XML
+                    for (int i = 0; i < Database.tables.get(t).records.size(); i++)
+                    {
+                        // iterate through each record
+                        // write to file
+                        String date = Database.tables.get(t).records.get(i).record_date;
+                        
+                        // now that we have the date
+                        // we need to iterate through each cell
+                        // and append to file
+                        for (int j = 0; j < Database.tables.get(t).records.get(i).cells.size(); j++)
+                        {
+                            //get the table element.
+                            String columnName = Database.tables.get(t).columns.get(i).column_name;
+                            Node fieldName = doc.getElementsByTagName(columnName).item(0);
+                            
+                            String data = Database.tables.get(t).records.get(i).cells.get(j);
+                            data = data.replaceAll("'", "");
+                            Element dataElement = doc.createElement(data);
+                            Attr attr = doc.createAttribute("timestamp");
+                            attr.setValue(""+new Date());
+                            dataElement.setAttributeNode(attr);
+                            
+                            fieldName.appendChild(dataElement);
+                            rootElement.appendChild(fieldName);
+                        }
+                        // now we write it to XML
+                        // write the content into xml file
+                        TransformerFactory transformerFactory =
+                                TransformerFactory.newInstance();
+                        Transformer transformer =
+                                transformerFactory.newTransformer();
+                        DOMSource source = new DOMSource(doc);
+                        StreamResult result =
+                                new StreamResult(new File(directory_to+t+".xml"));
+                        transformer.transform(source, result);
+                        // Output to console for testing
+                        StreamResult consoleResult =
+                                new StreamResult(System.out);
+                        transformer.transform(source, consoleResult);
+                        
+                    }
+                    writer.println("");
+                }
 
-            // close out the file
-            writer.close();
+                // close out the file
+                writer.close();
+            } catch (Exception ex) 
+            {
+                ex.printStackTrace();
+            } 
 
         } else
             System.out.println("You are not working in an active database; please CREATE or LOAD a database.");
