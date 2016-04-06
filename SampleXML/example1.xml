@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<s table_Column_Count="3" table_Record_Count="4">
+  <col1 is_null_allowed="false" restriction="5" restriction_2="0" type="VARCHAR">
+    <Record0>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Sam'</data>
+    </Record0>
+    <Record1>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Alex'</data>
+    </Record1>
+    <Record2>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Mark'</data>
+    </Record2>
+    <Record3>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Carl'</data>
+    </Record3>
+  </col1>
+  <col2 is_null_allowed="false" restriction="3" restriction_2="0" type="INT">
+    <Record0>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">1</data>
+    </Record0>
+    <Record1>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">2</data>
+    </Record1>
+    <Record2>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">3</data>
+    </Record2>
+    <Record3>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">4</data>
+    </Record3>
+  </col2>
+  <col3 is_null_allowed="true" restriction="1" restriction_2="0" type="BIT">
+    <Record0>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">NULL</data>
+    </Record0>
+    <Record1>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">NULL</data>
+    </Record1>
+    <Record2>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">NULL</data>
+    </Record2>
+    <Record3>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">NULL</data>
+    </Record3>
+  </col3>
+</s>
