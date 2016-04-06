@@ -9,6 +9,7 @@
 
 ## Unit test redirect
 .temp
+*.jar
 
 ### Android ###
 # Built application files
