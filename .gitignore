@@ -7,6 +7,9 @@
 # More info: https://code.google.com/p/iosched/source/browse/.gitignore (Note: What large companies do is not necessarily what's best for small companies)
 # More info: https://intellij-support.jetbrains.com/entries/23393067 (JetBrain's take on what to include and not)
 
+## Unit test redirect
+.temp
+
 ### Android ###
 # Built application files
 *.apk
