@@ -2332,12 +2332,23 @@ public class Project {
         // WE ALSO NEED TO DROP THE FILE FROM SECONDARY MEMORY
         try {
             File f = new File(directory_to + Database.temp_database_name.toLowerCase());
-            if (f.exists()) {
+            if (f.exists()) 
+            {
+                //first delete all the files inside the directory.
+                File[] directoryListing = f.listFiles();
+                for(File file : directoryListing)
+                {
+                file.delete();
+                }
+                
+                //after all files have been deleted, delete the directory. 
                 f.delete();
                 System.out.println("The saved datbase was successfully deleted!");
             } else
                 System.out.println("The database was not saved; so no file was deleted.");
-        } catch (Exception e) {
+        } catch (Exception e) 
+        {
+            e.printStackTrace();
         }
     }
 
@@ -3077,6 +3088,3 @@ public class Project {
     }
            
 }
-
-
-
