@@ -1,23 +1,16 @@
-package project;
+//package project;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.HashSet;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -2366,23 +2359,6 @@ public class Project {
                         se.printStackTrace();
                     }
                 }
-
-//                File theXMLDir = new File(fileName);
-//
-//                // if the directory does not exist, create it
-//                if (!theXMLDir.exists()) {
-//                    try {
-//                        theXMLDir.mkdir();
-//                    } catch (Exception se) {
-//                        // handle it
-//                        se.printStackTrace();
-//                    }
-//                }
-
-                // create the file
-                // this will also overwrite the file
-               //PrintWriter writer = new PrintWriter(directory_to + Database.database_name.toLowerCase()+"t", "UTF-8");
-
                 // iterate through all tables
                 Enumeration<String> e = Database.tables.keys();
                 String t;
@@ -2393,47 +2369,31 @@ public class Project {
                             = dbFactory.newDocumentBuilder();
                     Document doc = dBuilder.newDocument();
                     t = e.nextElement();
-                    
-                    //writer.println(t); // name of the table
 
                     //xml writing
-                    //count of how many columns in the table
+                    //count of how many columns in the table.
                     String size = Database.tables.get(t).columns.size() + "";
+                    //create the table tag.
                     Element rootElement = doc.createElement(t);
+                    //create the table count attr.
                     Attr attrTableCount = doc.createAttribute("table_Column_Count");
                     attrTableCount.setValue(size);
                     rootElement.setAttributeNode(attrTableCount);
                     doc.appendChild(rootElement);
 
-                    //writing to a TEXT FILE
-                    //writer.println(Database.tables.get(t).columns.size());
-                    // number
-                    // of
-                    // columns
-                    // in
-                    // the
-                    // table
-
-                    //writing to a TEXT FILE
-//                    for (int i = 0; i < Database.tables.get(t).columns.size(); i++) {
-//                        // write to file
-//                        writer.println(Database.tables.get(t).columns.get(i).column_name + DELIMITER
-//                                + Database.tables.get(t).columns.get(i).column_type + DELIMITER
-//                                + Database.tables.get(t).columns.get(i).restriction + DELIMITER
-//                                + Database.tables.get(t).columns.get(i).restriction_2 + DELIMITER
-//                                + Database.tables.get(t).columns.get(i).is_null_allowed);
-//                    }
-
                     //writing to XML
                     for (int i = 0; i < Database.tables.get(t).columns.size(); i++) {
                         // iterate through each column
 
+                        //Assign each value in the database object to a local
+                        //String value and then assign it to make it more readable. 
                         String columnName = Database.tables.get(t).columns.get(i).column_name;
                         String columnType = Database.tables.get(t).columns.get(i).column_type;
                         int restriction = Database.tables.get(t).columns.get(i).restriction;
                         int restriction2 = Database.tables.get(t).columns.get(i).restriction_2;
                         String isNullAllowed = Database.tables.get(t).columns.get(i).is_null_allowed;
 
+                        //create column tag and it's attrs. 
                         Element fieldName = doc.createElement(columnName);
                         Attr attrType = doc.createAttribute("type");
                         attrType.setValue(columnType);
@@ -2453,26 +2413,8 @@ public class Project {
 
                         rootElement.appendChild(fieldName);
                     }
-
-                    //write to TEXT FILE
-//                    for (int i = 0; i < Database.tables.get(t).records.size(); i++) {
-//                        // iterate through each record
-//                        // write to file
-//                        String it = "";
-//                        it += Database.tables.get(t).records.get(i).record_date;
-//                        // now that we have the date
-//                        // we need to iterate through each cell
-//                        // and append to file
-//                        for (int j = 0; j < Database.tables.get(t).records.get(i).cells.size(); j++) {
-//                            it += DELIMITER + Database.tables.get(t).records.get(i).cells.get(j);
-//                        }
-//                        // now we write it to file
-//                        writer.println(it);
-//                    }
-
                     //Write to XML
-                    for (int i = 0; i < Database.tables.get(t).records.size(); i++) 
-                    {
+                    for (int i = 0; i < Database.tables.get(t).records.size(); i++) {
                         // iterate through each record
                         // write to file
                         String date = Database.tables.get(t).records.get(i).record_date;
@@ -2481,16 +2423,13 @@ public class Project {
                         // we need to iterate through each cell
                         // and append to file
                         int recordCount = Database.tables.get(t).records.get(i).cells.size();
-                        for (int j = 0; j < recordCount; j++) 
-                        {
+                        for (int j = 0; j < recordCount; j++) {
                             //get the table element.
                             String columnName = Database.tables.get(t).columns.get(j).column_name;
-                            Node fieldName = doc.getElementsByTagName(columnName).item(0);
-                            
-                            
+                            Node columnTag = doc.getElementsByTagName(columnName).item(0);
+
                             String data = Database.tables.get(t).records.get(i).cells.get(j);
-                            //data = data.replaceAll("'", "");
-                            Element recordElement = doc.createElement("Record"+i);
+                            Element recordElement = doc.createElement("Record" + i);
 
                             Element dataElement = doc.createElement("data");
                             Attr attr = doc.createAttribute("timestamp");
@@ -2498,23 +2437,22 @@ public class Project {
                             dataElement.appendChild(doc.createTextNode(data));
                             dataElement.setAttributeNode(attr);
 
-                            fieldName.appendChild(recordElement);
+                            columnTag.appendChild(recordElement);
                             recordElement.appendChild(dataElement);
-                            rootElement.appendChild(fieldName);
+                            rootElement.appendChild(columnTag);
                         }
                     }
-                    
+                    // divide to get the accurate size of columns. 
                     int dataNodesLenght = doc.getElementsByTagName("data").getLength();
                     int columnNodesLenght = doc.getDocumentElement().getChildNodes().getLength();
-                    int recordCount = dataNodesLenght/columnNodesLenght;
+                    int recordCount = dataNodesLenght / columnNodesLenght;
 
+                    //create the attr that will store the number of records in the table. 
                     Attr attrRecordCount = doc.createAttribute("table_Record_Count");
                     attrRecordCount.setValue(recordCount + "");
                     rootElement.setAttributeNode(attrRecordCount);
-                    
-                    //writer.println("");
-                    // now we write it to XML
-                    // write the content into xml file
+
+                    // write the content into an xml file.
                     TransformerFactory transformerFactory
                             = TransformerFactory.newInstance();
                     Transformer transformer
@@ -2524,20 +2462,15 @@ public class Project {
                     StreamResult result
                             = new StreamResult(new File(fileName + "/" + t + ".xml"));
                     transformer.transform(source, result);
-//                    // Output to console for testing
+
+//                    // Output XML written to console for testing
 //                    StreamResult consoleResult =
 //                            new StreamResult(System.out);
 //                    transformer.transform(source, consoleResult);
-
                 }
-
-                // close out the file
-                //writer.close();
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
         } else {
             System.out.println("You are not working in an active database; please CREATE or LOAD a database.");
         }
@@ -2553,37 +2486,35 @@ public class Project {
         File file = new File(directory_to + Database.temp_database_name);
         if (!(file.exists() && file.isDirectory())) {
             System.out.println("Cannot load " + Database.temp_database_name + "; the database does not exist.");
-        } else {
-            if (Database.database_name != null) {
-                System.out.println(
-                        "Loading a database will lose all current data if not saved. Are you ok with this? (y/n)");
-                String it = scanning.nextLine();
-                while (!it.toUpperCase().equals("N") && !it.toUpperCase().equals("NO") && !it.toUpperCase().equals("Y")
-                        && !it.toUpperCase().equals("YES")) {
-                    System.out.println("Bad user input; enter: (y/n)");
-                    it = scanning.nextLine();
-                }
-                if (it.toUpperCase().equals("Y") || it.toUpperCase().equals("YES")) {
-                    // if the user approved
-                    // MAKE THE SWITCH
-                    Database.tables.clear();
+        } else if (Database.database_name != null) {
+            System.out.println(
+                    "Loading a database will lose all current data if not saved. Are you ok with this? (y/n)");
+            String it = scanning.nextLine();
+            while (!it.toUpperCase().equals("N") && !it.toUpperCase().equals("NO") && !it.toUpperCase().equals("Y")
+                    && !it.toUpperCase().equals("YES")) {
+                System.out.println("Bad user input; enter: (y/n)");
+                it = scanning.nextLine();
+            }
+            if (it.toUpperCase().equals("Y") || it.toUpperCase().equals("YES")) {
+                // if the user approved
+                // MAKE THE SWITCH
+                Database.tables.clear();
 
-                    // HERE IS WHERE WE DO EVERYTHING!
-                    loadXMLDb();
-                    Database.database_name = Database.temp_database_name;
-                    Database.temp_database_name = null;
-
-                    System.out.println("Database loaded successfully!");
-                } else {
-                    Database.temp_database_name = null;
-                    System.out.println("Database did not load.");
-                }
-            } else {
-                // there is no current database loaded
                 // HERE IS WHERE WE DO EVERYTHING!
                 loadXMLDb();
                 Database.database_name = Database.temp_database_name;
+                Database.temp_database_name = null;
+
+                System.out.println("Database loaded successfully!");
+            } else {
+                Database.temp_database_name = null;
+                System.out.println("Database did not load.");
             }
+        } else {
+            // there is no current database loaded
+            // HERE IS WHERE WE DO EVERYTHING!
+            loadXMLDb();
+            Database.database_name = Database.temp_database_name;
         }
         Database.temp_database_name = null;
     }
@@ -3050,83 +2981,9 @@ public class Project {
         return r;
     }
 
-     //loads a database file from memory
-//    public static int loadDB() 
-//    {
-//        File DB = new File(directory_to + Database.temp_database_name+"t");
-//        int failure = 1;
-//        Scanner input_ = null;
-//        Scanner line = null;
-//        try 
-//        {
-//            input_ = new Scanner(DB);
-//        } catch (FileNotFoundException ex) 
-//        {
-//        }
-//        ;
-//
-//        String key = null;
-//        String s = null;
-//        // line = new Scanner(s);
-//        // line.useDelimiter(DELIMITER);
-//        int numCol = 0;
-//
-//        // still possibility of another table
-//        while (input_.hasNextLine()) 
-//        {
-//            key = input_.nextLine();
-//            Database.tables.put(key, new Table());
-//            numCol = input_.nextInt();
-//            input_.nextLine();
-//            ArrayList<Column> tempcolumns = Database.tables.get(key).columns;
-//            for (int i = 0; i < numCol; i++) {
-//                s = input_.nextLine();
-//
-//                line = new Scanner(s);
-//                line.useDelimiter(DELIMITER);
-//                tempcolumns.add(new Column(line.next(), line.next(), Integer.parseInt(line.next()),
-//                        Integer.parseInt(line.next()), line.next()));
-//
-//                line.close();
-//            }
-//
-//            // Create records until a blank line is found
-//            while (input_.hasNextLine() && !(s = input_.nextLine()).equals("") && !s.equals("\n")) 
-//            {
-//                line = new Scanner(s);
-//                line.useDelimiter(DELIMITER);
-//
-//                String dateString = line.next();
-//                ArrayList<String> data = new ArrayList<String>();
-//                for (int i = 0; i < numCol; i++) {
-//                    String test = line.next();
-//                    // System.out.println(test);
-//                    data.add(test);
-//                }
-//
-//                Record r = new Record(dateString, data);
-//                Database.tables.get(key).records.add(r);
-//                line.close();
-//            }
-//
-//        }
-//        input_.close();
-//        // if ( line != null )
-//        // line.close();
-//        failure = 0;
-//        loadXMLDb();
-//        return failure;
-//
-//    }
-    
     public static int loadXMLDb() {
         try {
             String DbName = Database.temp_database_name;
-            
-            //Testing XML
-            Database.tables.clear();
-            
-            
             String fileName = "databases/" + DbName;
             File dir = new File(fileName);
             File[] directoryListing = dir.listFiles();
@@ -3141,119 +2998,81 @@ public class Project {
                     doc.getDocumentElement().normalize();
 
                     //get the table tag
-                    Node table = doc.getDocumentElement();
                     String tableName = doc.getDocumentElement().getNodeName();
 
                     //create a table in the database obj
                     Database.tables.put(tableName, new Table());
                     ArrayList<Column> tempcolumns = Database.tables.get(tableName).columns;
-                    Element tableElement = (Element) table;
 
-                    //get table size;
-                    String tableSize = tableElement.getAttribute("table_Column_Count");
-
-                    //get children node of table - field tags
+                    //get children node of the table - column tags.
                     NodeList nodeList = doc.getDocumentElement().getChildNodes();
 
-                    //for each field tag
+                    //for each column tag.
                     for (int temp = 0; temp < nodeList.getLength(); temp++) {
                         Node fieldTag = nodeList.item(temp);
 
-                        //get the fieldName
-                        String fieldName = fieldTag.getNodeName();
+                        //get the column Name.
+                        String columnName = fieldTag.getNodeName();
 
                         if (fieldTag.getNodeType() == Node.ELEMENT_NODE) {
-                            //getting the table attributes
+                            //getting the table attributes.
                             Element eElement = (Element) fieldTag;
                             String isNullAllowed = eElement.getAttribute("is_null_allowed");
                             String restriction = eElement.getAttribute("restriction");
                             String restriction2 = eElement.getAttribute("restriction_2");
                             String type = eElement.getAttribute("type");
 
-                            //adding the table structure information to the database object
+                            //adding the table structure information to the database object.
                             tempcolumns.add(new Column(
-                                    fieldName,
+                                    columnName,
                                     type,
                                     Integer.parseInt(restriction),
                                     Integer.parseInt(restriction2),
                                     isNullAllowed));
-
-                            NodeList recordNodeList
-                                    = fieldTag.getChildNodes();
-
-                            //for each record tag
-//                            ArrayList<String> dataArrayList = new ArrayList<String>();
-//                            String timestampData = null;
-//                            for (int count = 0; count < recordNodeList.getLength(); count++) {
-//                                Node recordNode = recordNodeList.item(count);
-//
-//                                String recordNodeName = recordNode.getNodeName();
-//                                NodeList recordNodes = doc.getElementsByTagName(type);
-//                                if (recordNode.getNodeType()
-//                                        == recordNode.ELEMENT_NODE) {
-//                                    NodeList dataNodeList = recordNode.getChildNodes();
-//                                    //there should only be ONE data tag per record
-//                                    //TODO: Add extra node inside the DATA called OldData for any changes
-//                                    Node dataNode = dataNodeList.item(0);
-//                                    Element dataElement = (Element) dataNode;
-//                                    String data = dataElement.getTextContent();
-//                                    timestampData = dataElement.getAttribute("timestamp");
-//                                    dataArrayList.add(data);
-//                                }
-//                            }
-//                            Record records = new Record(timestampData, dataArrayList);
-//                            Database.tables.get(tableName).records.add(records);
                         }
                     }
 
-
-                    
+                    //get a list of records tags.
                     NodeList recordNodeList
                             = doc.getDocumentElement().getChildNodes().item(0).getChildNodes();
-                    
-                    //for each record tag
-                    for (int count = 0; count < recordNodeList.getLength(); count++) {
-                        Node recordNode = recordNodeList.item(count);
+
+                    //for each record tag.
+                    for (int i = 0; i < recordNodeList.getLength(); i++) {
+                        Node recordNode = recordNodeList.item(i);
                         String recordNodeName = recordNode.getNodeName();
                         NodeList specificRecordNode = doc.getElementsByTagName(recordNodeName);
-                        
+
                         ArrayList<String> dataArrayList = new ArrayList<String>();
                         String timestampData = null;
-                        //for each specific example record0 in each column
+
+                        //for each specific example record0 in each column.
                         for (int j = 0; j < specificRecordNode.getLength(); j++) {
                             if (recordNode.getNodeType()
-                                    == recordNode.ELEMENT_NODE) 
-                            {
-                                //grab each specific record in each column
+                                    == recordNode.ELEMENT_NODE) {
+                                //grab each specific record in each column.
                                 Node dataNodeList = specificRecordNode.item(j);
-                                
-                                //get parent node to quickly get type
-                                Node columnNode = specificRecordNode.item(j).getParentNode();
-                                Element eElement = (Element) columnNode;
-                                String type = eElement.getAttribute("type");
-                                
-                                
                                 Element dataElement = (Element) dataNodeList;
+
+                                //get the data from the data tag.
                                 String data = dataElement.getTextContent();
+                                //get the timestamp attribrute.
                                 timestampData = dataElement.getAttribute("timestamp");
                                 dataArrayList.add(data);
                             }
                         }
+                        //save the data and timestamp into the Records obj.
                         Record records = new Record(timestampData, dataArrayList);
                         Database.tables.get(tableName).records.add(records);
                     }
-                    
+
                 }
             } else {
                 System.out.println("NO DIRECTORY");
-                // Handle the case where dir is not really a directory.
-                // Checking dir.isDirectory() above would not be sufficient
-                // to avoid race conditions with another process that deletes
-                // directories.
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Database.database_name = Database.temp_database_name;
         return 0;
     }
            
