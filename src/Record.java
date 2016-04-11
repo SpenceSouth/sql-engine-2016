@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.Stack;
 
 class Record {
     public String record_date;
+    public Stack<String> wareHouseRecords = new Stack<String>();      // -- s
     public ArrayList<String> cells = new ArrayList<String>();
 
     // record constructor
@@ -14,7 +17,10 @@ class Record {
     public Record(String date, ArrayList<String> tuples) {
         record_date = (new Date()).toString();
         cells = tuples;
+        wareHouseRecords.push(record_date);      // -- s
     }
+
+
 
     // toString
     public String toString() {

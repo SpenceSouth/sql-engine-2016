@@ -2720,9 +2720,15 @@ public class Project {
 
                     // if we're in a wSELECT statement
                     // display the time at the end
-                    if (tokens.get(0).value.equals("WSELECT")) {
+                    if (tokens.get(0).value.equals("WSELECT")) {            // NEEDS WORK* THIS NEEDS TO CHIN ALL MODIFICATIONS ON WSELECT
                         System.out.print(" -> " + r.get(i).record_date);
                     }
+
+                    if (tokens.get(0).value.equals("SELECT")) {             // IS GOOD* MADE IT TO WHERE REGULAR SELECT DISPLAYS THE TIME AND DATE
+                        System.out.print(" -> " + r.get(i).record_date);
+                    }
+
+
 
                     // display new line for next record
                     System.out.println("");
