@@ -8,6 +8,7 @@
 # Delete from table with compound statement
 
 import os
+import shutil
 
 
 def run(command):
@@ -21,11 +22,11 @@ else:
 
 print 'Testing CREATE DATABASE'
 run('java ' + path + ' "CREATE DATABASE test;"')
-database_created = os.path.isfile('databases/test')
+database_created = os.path.isdir('databases/test')
 
 print 'Testing DROP DATABASE'
 run('java ' + path + ' "DROP DATABASE test;"')
-database_dropped = os.path.isfile('databases/test')
+database_dropped = os.path.isdir('databases/test')
 
 # CREATE TABLE
 print 'Testing CREATE TABLE'
@@ -33,14 +34,7 @@ run('java ' + path + ' "CREATE DATABASE a; CREATE TABLE b (id int);"')
 
 temp = open('.temp', 'r')
 
-table_created = False
-
-for line in temp.readlines():
-    if line.__contains__('Successfully created table b'):
-        table_created = True
-        break
-    else:
-        table_created = False
+table_created = os.path.isfile('databases/a/b.xml')
 
 temp.close()
 
@@ -50,14 +44,7 @@ run('java ' + path + ' "LOAD DATABASE a; DROP TABLE b;"')
 
 temp = open('.temp', 'r')
 
-table_dropped = False
-
-for line in temp.readlines():
-    if line.__contains__('b successfully dropped'):
-        table_dropped = True
-        break
-    else:
-        table_dropped = False
+table_dropped = not os.path.isfile('databases/a/b.xml')
 
 temp.close()
 
@@ -71,6 +58,7 @@ temp = open('.temp', 'r')
 insert_successful = False
 
 for line in temp.readlines():
+    print line
     if line.__contains__('Successfully inserted into b'):
         insert_successful = True
         break
@@ -122,6 +110,9 @@ for line in temp.readlines():
         delete_successful = False
 
 temp.close()
+
+# Clean up
+shutil.rmtree('databases/a')
 
 
 # Blank lines for formatting
