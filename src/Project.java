@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import struc.DbManager;
 
 //Group A1
 //COP 4710 - Data Modeling
@@ -57,7 +58,12 @@ public class Project {
     public static boolean in_where;
     public static String table_name = "";
     public static String command = "";
-    public static String auto_command = "CREATE DATABASE oniel_testing;Create table s (col1 varchar(5) NOT NULL, col2 int(3) NOT NULL, col3 BIT);INSERT INTO s (col1, col2) VALUES ('Sam', 1);INSERT INTO s (col1, col2) VALUES ('Alex', 2);INSERT INTO s (col1, col2) VALUES ('Mark', 3);INSERT INTO s (col1, col2) VALUES ('Carl', 4);create table t (col1 int, col2 varchar);insert into t values (1, 'oniel');insert into t values (null, 'alex');insert into t values (3, 'nick');insert into t values (4, null);";
+    public static String auto_command = "CREATE DATABASE oniel_testing;Create table s (col1 varchar(5) NOT NULL, " +
+            "col2 int(3) NOT NULL, col3 BIT);INSERT INTO s (col1, col2) VALUES ('Sam', 1);" +
+            "INSERT INTO s (col1, col2) VALUES ('Alex', 2);INSERT INTO s (col1, col2) VALUES ('Mark', 3);" +
+            "INSERT INTO s (col1, col2) VALUES ('Carl', 4);create table t (col1 int, col2 varchar);" +
+            "insert into t values (1, 'oniel');insert into t values (null, 'alex');" +
+            "insert into t values (3, 'nick');insert into t values (4, null);";
     ////////////////////////////////////////////////////////
     // object definitions
     public String value;
@@ -66,6 +72,8 @@ public class Project {
     public static void main(String[] args)
             throws FileNotFoundException, UnsupportedEncodingException, InterruptedException {
         System.out.println("Starting SQL Engine!\n");
+
+        DbManager.getInstance().loadDatabase("a");
 
         // Runs the program in console mode
         if (args.length == 0) {
@@ -193,7 +201,7 @@ public class Project {
                     // begin execution
                     if (display_debugger_stuff)
                         System.out.println("COMMAND: " + command);
-                    if (command.equals("LIST TABLES"))
+                    if (command.equals("LIST TABLES") || command.equals("SHOW TABLES"))
                         execute_list_tables();
                     else if (command.equals("CREATE DATABASE"))
                         execute_create_database();
@@ -231,6 +239,7 @@ public class Project {
         }
     }
 
+// Program parsing section-fold
     // parse the entire program
     public static void parse() {
         // reset the global index
