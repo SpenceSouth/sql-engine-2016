@@ -1085,13 +1085,11 @@ public class Project {
         } else
             parse_error.add(tokens.get(index).value + " is not a valid item to load.");
     }
-
     // parsing
     public static void save() {
         // execute save command
         // nothing to do here because this is the end of the command
     }
-
     // parsing
     public static void commit() {
         // execute commit command
@@ -1099,7 +1097,6 @@ public class Project {
         // display message to console
         parse_error.add("This SQL Engine uses auto-commit.");
     }
-
     // parsing
     public static void database() {
         if (tokens.get(index).type.equals("attribute")) {
@@ -1109,7 +1106,6 @@ public class Project {
             parse_error.add(tokens.get(index).value + " is not a database name.");
         }
     }
-
     // parsing
     public static void table() {
         if (tokens.get(index).type.equals("attribute")) {
@@ -1145,7 +1141,6 @@ public class Project {
             parse_error.add(tokens.get(index).value + " is not a column name.");
         }
     }
-
     // parsing
     public static void column_2() {
         if (tokens.get(index).value.equals(",")) {
@@ -1156,7 +1151,6 @@ public class Project {
         } else
             return;
     }
-
     // parsing
     public static void field_def_1() {
         field_name_1();
@@ -1183,7 +1177,6 @@ public class Project {
         // this lets users type in multiple field definitions
         field_def_2();
     }
-
     // parsing
     public static void field_def_2() {
         if (tokens.get(index).value.equals(",")) {
@@ -1193,7 +1186,6 @@ public class Project {
         } else
             return;
     }
-
     // parsing
     public static void field_name_1() {
         column_1();
@@ -1252,11 +1244,14 @@ public class Project {
                     if (temp != -1)
                         temp3.add(temp);
                     else
+                    {
                         temp3.add(get_default_size(temp2.get(temp2.size() - 1)));
-
-                } else
+                    }
+                }
+                else
+                {
                     parse_error.add(tokens.get(index).value + " is not valid; expecting a number.");
-
+                }
                 if (tokens.get(index).value.equals(")"))
                     index++;
                 else
