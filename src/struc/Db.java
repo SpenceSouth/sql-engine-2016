@@ -43,6 +43,10 @@ public class Db {
         tables.get(table).insert(col);
     }
 
+    public void select(String table, Col record){
+        tables.get(table).select(record);
+    }
+
     public String showTables(){
 
         String list = "";

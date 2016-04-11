@@ -58,6 +58,14 @@ public class DbManager {
         return databases.get(current).getTable(table);
     }
 
+    public void select(String table, Col record) {
+        databases.get(current).select(table, record);
+    }
+
+    public void select(String database, String table, Col record){
+        databases.get(database).select(table, record);
+    }
+
     public boolean loadDatabase(String name){
         databases.put(name, new Db(name));
         current = name;
@@ -176,6 +184,10 @@ public class DbManager {
             e.printStackTrace();
         }
         //Database.database_name = Database.temp_database_name;
+    }
+
+    private void saveXML(String databaseName){
+
     }
 
 }
