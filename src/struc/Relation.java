@@ -41,7 +41,9 @@ public class Relation {
         return false;
     }
 
-    public boolean select(Col record){
+    public boolean select(ArrayList<String> params, ArrayList<String> conditions){
+
+
 
         return false;
     }

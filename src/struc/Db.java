@@ -1,5 +1,6 @@
 package struc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -43,8 +44,8 @@ public class Db {
         tables.get(table).insert(col);
     }
 
-    public void select(String table, Col record){
-        tables.get(table).select(record);
+    public void select(String table, ArrayList<String> params, ArrayList<String> conditions){
+        tables.get(table).select(params, conditions);
     }
 
     public String showTables(){
@@ -61,6 +62,10 @@ public class Db {
         else{
             return list;
         }
+    }
+
+    public int size(){
+        return tables.size();
     }
 
 

@@ -46,6 +46,10 @@ public class DbManager {
         return false;
     }
 
+    public int size(){
+        return databases.size();
+    }
+
     public void insert(String table, Col col){
         this.currentDatabase().insert(table, col);
     }
@@ -58,12 +62,12 @@ public class DbManager {
         return databases.get(current).getTable(table);
     }
 
-    public void select(String table, Col record) {
-        databases.get(current).select(table, record);
+    public void select(String table, ArrayList<String> params, ArrayList<String> conditions) {
+        select(current, table, params, conditions);
     }
 
-    public void select(String database, String table, Col record){
-        databases.get(database).select(table, record);
+    public void select(String database, String table, ArrayList<String> params, ArrayList<String> conditions){
+        databases.get(database).select(table, params, conditions);
     }
 
     public boolean loadDatabase(String name){
@@ -125,8 +129,6 @@ public class DbManager {
                                             Integer.parseInt(restriction),
                                             Integer.parseInt(restriction2),
                                             Boolean.parseBoolean(isNullAllowed));
-
-                            currentDatabase().createTable(tableName);
 
                             //adding the table structure information to the database object.
                             /*tempcolumns.add(new Column(

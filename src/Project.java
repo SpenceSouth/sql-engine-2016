@@ -73,7 +73,8 @@ public class Project {
             throws FileNotFoundException, UnsupportedEncodingException, InterruptedException {
         System.out.println("Starting SQL Engine!\n");
 
-        DbManager.getInstance().loadDatabase("a");
+        DbManager manager = DbManager.getInstance();
+        manager.loadDatabase("a");
 
         // Runs the program in console mode
         if (args.length == 0) {

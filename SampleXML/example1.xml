@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <s table_Column_Count="3" table_Record_Count="4">
-  <col1 is_null_allowed="false" restriction="5" restriction_2="0" type="VARCHAR">
+  <name is_null_allowed="false" restriction="5" restriction_2="0" type="VARCHAR">
     <Record0>
       <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Sam'</data>
     </Record0>
@@ -13,33 +13,33 @@
     <Record3>
       <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Carl'</data>
     </Record3>
-  </col1>
-  <col2 is_null_allowed="false" restriction="3" restriction_2="0" type="INT">
+  </name>
+  <age is_null_allowed="false" restriction="3" restriction_2="0" type="INT">
     <Record0>
-      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">1</data>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">20</data>
     </Record0>
     <Record1>
-      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">2</data>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">21</data>
     </Record1>
     <Record2>
-      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">3</data>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">31</data>
     </Record2>
     <Record3>
-      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">4</data>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">41</data>
     </Record3>
-  </col2>
-  <col3 is_null_allowed="true" restriction="1" restriction_2="0" type="BIT">
+  </age>
+  <salary is_null_allowed="true" restriction="1" restriction_2="0" type="INT">
     <Record0>
-      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">NULL</data>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">30000</data>
     </Record0>
     <Record1>
-      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">NULL</data>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">40000</data>
     </Record1>
     <Record2>
-      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">NULL</data>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">50000</data>
     </Record2>
     <Record3>
-      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">NULL</data>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">60000</data>
     </Record3>
-  </col3>
+  </salary>
 </s>
