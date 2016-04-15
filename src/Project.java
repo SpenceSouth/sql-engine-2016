@@ -85,6 +85,7 @@ public class Project {
         params.add("name");
         conditions.add("name = 'Alex'");
 
+        // Update table PEOPLE at column NAME with new value SPENCE under these CONDITIONS
         manager.update("people", "name", "'Spence'", conditions);
 
         params.clear();
