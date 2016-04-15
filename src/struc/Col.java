@@ -67,6 +67,18 @@ public class Col {
         recs.add(new Rec(data, timestamp));
     }
 
+    public Rec getRec(int index){
+        return recs.get(index);
+    }
+
+    public ArrayList<Rec> getRecs(){
+        return recs;
+    }
+
+    public String getName(){
+        return name;
+    }
+
     public int getMaxLength(){
         return maxLength;
     }

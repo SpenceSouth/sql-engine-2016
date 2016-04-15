@@ -43,6 +43,40 @@ public class Relation {
 
     public boolean select(ArrayList<String> params, ArrayList<String> conditions){
 
+        if(params.size() == 0 && conditions.size() == 0){
+
+
+            // Get header data from columns
+            for(Col column : columns){
+                System.out.print(column.getName() + "\t");
+            }
+
+            System.out.println();
+
+            for(int i = 0; i < columns.get(0).size(); i++){
+                for(Col column : columns){
+                    String name = column.getName();
+                    System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
+                }
+
+                System.out.println();
+            }
+
+        }
+        else if(params.size() > 0 && conditions.size() == 0){
+
+        }
+        else if(params.size() == 0 && conditions.size() > 0){
+
+        }
+        else if(params.size() > 0 && conditions.size() > 0){
+
+        }
+        else{
+            System.out.println("Unexpected scenario occurred");
+            System.exit(2);
+        }
+
 
 
         return false;

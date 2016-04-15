@@ -76,6 +76,14 @@ public class Project {
         DbManager manager = DbManager.getInstance();
         manager.loadDatabase("a");
 
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
+
+//        params.add("name");
+//        params.add("salary");
+
+        manager.select("people", params, conditions);
+
         // Runs the program in console mode
         if (args.length == 0) {
             while (true) {

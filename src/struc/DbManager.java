@@ -110,8 +110,8 @@ public class DbManager {
                     NodeList nodeList = doc.getDocumentElement().getChildNodes();
 
                     //for each column tag.
-                    for (int temp = 0; temp < nodeList.getLength(); temp++) {
-                        Node fieldTag = nodeList.item(temp);
+                    for (int column = 0; column < nodeList.getLength(); column++) {
+                        Node fieldTag = nodeList.item(column);
 
                         //get the column Name.
                         String columnName = fieldTag.getNodeName();
@@ -141,24 +141,23 @@ public class DbManager {
 
                             //get a list of records tags.
                             NodeList recordNodeList
-                                    = doc.getDocumentElement().getChildNodes().item(temp).getChildNodes();
+                                    = doc.getDocumentElement().getChildNodes().item(column).getChildNodes();
 
                             //for each record tag.
                             for (int i = 0; i < recordNodeList.getLength(); i++) {
                                 Node recordNode = recordNodeList.item(i);
                                 String recordNodeName = recordNode.getNodeName();
-                                NodeList specificRecordNode = doc.getElementsByTagName(recordNodeName);
+                                NodeList specificRecordNode = recordNode.getChildNodes();
 
                                 ArrayList<String> dataArrayList = new ArrayList<String>();
                                 String timestampData = null;
 
                                 //for each specific example record0 in each column.
                                 for (int j = 0; j < specificRecordNode.getLength(); j++) {
-                                    if (recordNode.getNodeType()
-                                            == recordNode.ELEMENT_NODE) {
+                                    if (specificRecordNode.item(j).getNodeType() == recordNode.ELEMENT_NODE) {
                                         //grab each specific record in each column.
                                         Node dataNodeList = specificRecordNode.item(j);
-                                        Element dataElement = (Element) dataNodeList;
+                                        Element dataElement = (Element) specificRecordNode.item(j);
 
                                         //get the data from the data tag.
                                         String data = dataElement.getTextContent();
