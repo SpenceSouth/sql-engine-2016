@@ -50,8 +50,8 @@ public class DbManager {
         return databases.size();
     }
 
-    public void insert(String table, Col col){
-        this.currentDatabase().insert(table, col);
+    public void insertColumn(String table, Col col){
+        this.currentDatabase().insertColumn(table, col);
     }
 
     public Relation getTable(String database, String table){
@@ -84,6 +84,22 @@ public class DbManager {
 
     public void delete(String table, ArrayList<String> conditions){
         databases.get(current).getTable(table).delete(conditions);
+    }
+
+    public void insert(String table, ArrayList<String> values){
+        databases.get(current).getTable(table).insert(values);
+    }
+
+    public void insert(String database, String table, ArrayList<String> values){
+        databases.get(database).getTable(table).insert(values);
+    }
+
+    public void insert(String table, ArrayList<String> params, ArrayList<String> values){
+        databases.get(current).getTable(table).insert(params, values);
+    }
+
+    public void insert(String database, String table, ArrayList<String> params, ArrayList<String> values){
+        databases.get(database).getTable(table).insert(params, values);
     }
 
     public boolean loadDatabase(String name){
@@ -188,7 +204,7 @@ public class DbManager {
                                 Database.tables.get(tableName).records.add(records);*/
                             }
 
-                            currentDatabase().insert(tableName, col);
+                            currentDatabase().insertColumn(tableName, col);
 
                         }
                     }

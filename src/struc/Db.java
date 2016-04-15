@@ -40,8 +40,8 @@ public class Db {
         return false;
     }
 
-    public void insert(String table, Col col){
-        tables.get(table).insert(col);
+    public void insertColumn(String table, Col col){
+        tables.get(table).insertColumn(col);
     }
 
     public void select(String table, ArrayList<String> params, ArrayList<String> conditions){
@@ -54,6 +54,14 @@ public class Db {
 
     public void delete(String table, ArrayList<String> conditions){
         tables.get(table).delete(conditions);
+    }
+
+    public void insert(String table, ArrayList<String> values){
+        tables.get(table).insert(values);
+    }
+
+    public void insert(String table, ArrayList<String> params, ArrayList<String> values){
+        tables.get(table).insert(params, values);
     }
 
     public String showTables(){

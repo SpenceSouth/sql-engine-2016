@@ -29,9 +29,48 @@ public class Relation {
         return name;
     }
 
-    public void insert(Col record){
+    public void insertColumn(Col record){
         columns.add(record);
     }
+
+    public void insert(ArrayList<String> values){
+
+        if(columns.size() != values.size()){
+            System.out.println("Mismatch between number of columns and values to be inserted");
+        }
+
+        for(int i = 0; i < values.size(); i++){
+            columns.get(i).addRec(values.get(i));
+        }
+
+    }
+
+    public void insert(ArrayList<String> params, ArrayList<String> values){
+
+        if(columns.size() != values.size()){
+            System.out.println("Mismatch between number of columns and values to be inserted");
+        }
+
+        for(int i = 0; i < params.size(); i++){
+
+            Col col = getColumnByName(params.get(i));
+
+            col.addRec(values.get(i));
+
+        }
+
+    }
+
+    private Col getColumnByName(String name){
+        for(Col col : columns){
+            if(col.getName().equals(name)){
+                return col;
+            }
+        }
+
+        return null;
+    }
+
 
     public boolean update(String param, String value, ArrayList<String> conditions){
 

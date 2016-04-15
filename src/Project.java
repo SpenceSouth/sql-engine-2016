@@ -62,8 +62,8 @@ public class Project {
             "col2 int(3) NOT NULL, col3 BIT);INSERT INTO s (col1, col2) VALUES ('Sam', 1);" +
             "INSERT INTO s (col1, col2) VALUES ('Alex', 2);INSERT INTO s (col1, col2) VALUES ('Mark', 3);" +
             "INSERT INTO s (col1, col2) VALUES ('Carl', 4);create table t (col1 int, col2 varchar);" +
-            "insert into t values (1, 'oniel');insert into t values (null, 'alex');" +
-            "insert into t values (3, 'nick');insert into t values (4, null);";
+            "insertColumn into t values (1, 'oniel');insertColumn into t values (null, 'alex');" +
+            "insertColumn into t values (3, 'nick');insertColumn into t values (4, null);";
     ////////////////////////////////////////////////////////
     // object definitions
     public String value;
@@ -73,6 +73,7 @@ public class Project {
             throws FileNotFoundException, UnsupportedEncodingException, InterruptedException {
         System.out.println("Starting SQL Engine!\n");
 
+        // DEBUG CODE: NEED TO DELETE LATER
         DbManager manager = DbManager.getInstance();
         manager.loadDatabase("a");
 
@@ -89,15 +90,24 @@ public class Project {
         params.clear();
         conditions.clear();
 
+        ArrayList<String> values = new ArrayList<>();
+        values.add("'Naga'");
+        values.add("20");
+        values.add("31200");
+
+        manager.insert("people", values);
+
         manager.select("people", params, conditions);
 
-        //conditions.add("name = 'Spence'");
+        conditions.add("name = 'Spence'");
 
         manager.delete("people", conditions);
 
         conditions.clear();
 
         manager.select("people", params, conditions);
+
+        // DEBUG CODE: END
 
         // Runs the program in console mode
         if (args.length == 0) {
@@ -336,7 +346,7 @@ public class Project {
         table();
 
         // SEMANTIC CHECK
-        // cannot insert into a table if the table does not exist
+        // cannot insertColumn into a table if the table does not exist
         if (!does_table_exist(tokens.get(index - 1).value))
             semantic_error.add("The table: " + tokens.get(index - 1).value + " does not exist.");
 
@@ -474,7 +484,7 @@ public class Project {
 
         // SEMANTIC CHECK
         // we need to make sure that if we're inserting a new record
-        // all NON-NULL columns must be included in in the insert statement
+        // all NON-NULL columns must be included in in the insertColumn statement
         if (!is_semantic_error() && !is_parse_error()) {
             // only do this check if there are no current semantic/parse errors
             ArrayList<String> must_be_declared = (ArrayList<String>) get_all_non_null_columns(table_name).clone();
@@ -1654,24 +1664,24 @@ public class Project {
                                 parse_error.add(tokens.get(i).value + " is not a valid token.");
                             } else {
                                 // the first character is a valid token
-                                // so we need to separate it, and insert it
+                                // so we need to separate it, and insertColumn it
                                 String t = tokens.get(i).value.substring(0, 1);
 
                                 // update the current token
                                 tokens.get(i).value = tokens.get(i).value.substring(1, tokens.get(i).value.length());
 
-                                // insert new token
+                                // insertColumn new token
                                 tokens.add(i, new Project(t, "token"));
                             }
                         } else {
                             // the first 2 characters are a valid token
-                            // so we need to separate it, and insert it
+                            // so we need to separate it, and insertColumn it
                             String t = tokens.get(i).value.substring(0, 2);
 
                             // update the current token
                             tokens.get(i).value = tokens.get(i).value.substring(2, tokens.get(i).value.length());
 
-                            // insert new token
+                            // insertColumn new token
                             tokens.add(i, new Project(t, "token"));
                         }
                     }
@@ -1759,7 +1769,7 @@ public class Project {
 
                             t++;
                         }
-                        // insert the token to the token list
+                        // insertColumn the token to the token list
                         tokens.add(new Project(t2.replace("\\'", "'"), "varchar"));
 
                         // set the counter to the next immediate place in the
@@ -2231,7 +2241,7 @@ public class Project {
         // SEMANTIC CHECK
         // at this point, all the column names were inserted into temp1
         // we need to make sure there are no duplicate column names being
-        // insert into
+        // insertColumn into
         HashSet<String> temp_set = new HashSet<String>(temp1);
 
         if (temp_set.size() != it.size()) {
@@ -2596,15 +2606,15 @@ public class Project {
             // add the blank record record
             Database.tables.get(table_name).records.add(new Record());
 
-            // iterate through all columns to insert
+            // iterate through all columns to insertColumn
             for (int i = 0; i < c; i++) {
-                // so now we're going to insert 1 cell per column in that table
+                // so now we're going to insertColumn 1 cell per column in that table
                 Database.tables.get(table_name).records.get(Database.tables.get(table_name).records.size() - 1).cells
                         .add("NULL");
             }
 
             // IF that column ends has a value specified in the SQL command
-            // overwrite the insert with the value
+            // overwrite the insertColumn with the value
             for (int i = 0; i < temp2.size(); i++) {
                 Database.tables.get(table_name).records.get(Database.tables.get(table_name).records.size() - 1).cells
                         .set(get_column_index(temp6.get(i).column_name), temp2.get(i));
