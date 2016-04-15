@@ -102,6 +102,14 @@ public class DbManager {
         databases.get(database).getTable(table).insert(params, values);
     }
 
+    public void wUpdate(String table, String param, String value, ArrayList<String> conditions){
+        databases.get(current).getTable(table).wUpdate(param, value, conditions );
+    }
+
+    public void wSelect(String table, ArrayList<String> params, ArrayList<String> conditions){
+        databases.get(current).getTable(table).wSelect(params, conditions);
+    }
+
     public boolean loadDatabase(String name){
         databases.put(name, new Db(name));
         current = name;

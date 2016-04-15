@@ -64,6 +64,14 @@ public class Db {
         tables.get(table).insert(params, values);
     }
 
+    public void wUpdate(String table, String param, String value, ArrayList<String> conditions){
+        tables.get(table).wUpdate(param, value, conditions);
+    }
+
+    public void wSelect(String table, ArrayList<String> params, ArrayList<String> conditions){
+        tables.get(table).wSelect(params, conditions);
+    }
+
     public String showTables(){
 
         String list = "";

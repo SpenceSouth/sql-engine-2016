@@ -40,7 +40,7 @@ public class Rec {
         entries.add(entry);
     }
 
-    private void addEntry(String data){
+    public void addEntry(String data){
         entries.add(new Entry(data));
     }
 

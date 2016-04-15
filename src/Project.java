@@ -108,6 +108,16 @@ public class Project {
 
         manager.select("people", params, conditions);
 
+        conditions.add("name = 'Naga'");
+
+        manager.wUpdate("people", "name", "'Naga Kanaparthy'", conditions);
+
+        conditions.clear();
+
+        manager.select("people", params, conditions);
+
+        manager.wSelect("people", params, conditions);
+
         // DEBUG CODE: END
 
         // Runs the program in console mode
