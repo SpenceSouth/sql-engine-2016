@@ -52,6 +52,10 @@ public class Db {
         tables.get(table).update(param, value, conditions);
     }
 
+    public void delete(String table, ArrayList<String> conditions){
+        tables.get(table).delete(conditions);
+    }
+
     public String showTables(){
 
         String list = "";

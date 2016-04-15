@@ -91,6 +91,14 @@ public class Project {
 
         manager.select("people", params, conditions);
 
+        //conditions.add("name = 'Spence'");
+
+        manager.delete("people", conditions);
+
+        conditions.clear();
+
+        manager.select("people", params, conditions);
+
         // Runs the program in console mode
         if (args.length == 0) {
             while (true) {

@@ -71,12 +71,20 @@ public class Col {
         return recs.get(index);
     }
 
+    public void deleteRec(int index){
+        recs.remove(index);
+    }
+
     public ArrayList<Rec> getRecs(){
         return recs;
     }
 
     public String getName(){
         return name;
+    }
+
+    public void clear(){
+        recs.clear();
     }
 
     public int getMaxLength(){

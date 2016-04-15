@@ -78,6 +78,14 @@ public class DbManager {
         databases.get(database).update(table, param, value, conditions);
     }
 
+    public void delete(String database, String table, ArrayList<String> conditions){
+        databases.get(database).getTable(table).delete(conditions);
+    }
+
+    public void delete(String table, ArrayList<String> conditions){
+        databases.get(current).getTable(table).delete(conditions);
+    }
+
     public boolean loadDatabase(String name){
         databases.put(name, new Db(name));
         current = name;

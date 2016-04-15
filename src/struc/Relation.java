@@ -67,7 +67,52 @@ public class Relation {
         return false;
     }
 
-    public boolean delete(Col record){
+    public boolean delete(ArrayList<String> conditions){
+
+        if(conditions.size() == 0){
+
+            System.out.println();
+            int numOfRecords = columns.get(0).size();
+
+            for(Col column : columns){
+                column.clear();
+            }
+
+        }
+        else if(conditions.size() > 0){
+
+            ArrayList<Col> tempColumns = new ArrayList<>(columns);
+            HashSet<Integer> recordsToDelete = new HashSet<>();
+            int numOfRecords = columns.get(0).size();
+
+            for (int i = 0; i < numOfRecords; i++) {
+                for (Col column : tempColumns) {
+                    if (predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData(), false)) {
+                        recordsToDelete.add(i);
+                    }
+                }
+            }
+
+            System.out.println(recordsToDelete);
+
+            for(int i = 0; i < numOfRecords; i++){
+
+                for(Col column : tempColumns){
+
+                    if(recordsToDelete.contains(i)){
+                        column.deleteRec(i);
+                    }
+
+                }
+            }
+
+        }
+        else{
+            System.out.println("Unexpected scenario occurred");
+            System.exit(2);
+        }
+
+
 
         return false;
     }
