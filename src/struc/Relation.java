@@ -556,5 +556,49 @@ public class Relation {
         // Returns the number of records in column 0
         return columns.get(0).size();
     }
-
+    //Display Functions
+    public void displayTable(ArrayList<String> headers,ArrayList<String[]> records){
+      //Validation of Structure passed in 
+      //Checks that each element has the same number of fields and finds each fields max size which
+      //must be less than or equal to 25 else it will default to 25
+      int[] colSize = new int[headers.size()];
+      for(String[] rec : records){
+        if(rec.length == headers.size()){
+          for(int i = 0; i <  rec.length;i++){
+            if(colSize[i] < rec[i].length()){
+              if(rec[i].length() > 25){
+                colSize[i] = 25;
+              }
+              else{
+                colSize[i] = rec[i].length();
+              }
+            }
+          }
+        }
+        else{
+          if(DEBUG_ON){
+            System.out.println("Error : Mismatching Header length with records");
+            DebugHandler.append("RelationErrorLog.txt", "Error : Mismatching Header length with records");
+          }
+        }
+      }
+      String output = "";
+      String divider = "\n";
+      for(int i =0; i < headers.size();i++){
+        output += String.format(" %"+colSize[i]+"s |",headers.get(i));
+        for(int j = 0 ; j < colSize[i]; j++){
+          divider += "-";
+        }
+        
+      }
+      divider += "\n";
+      output += divider;
+      for(String[] rec : records){
+        for(int i =0; i < headers.size();i++){
+          output += String.format(" %"+colSize[i]+"s |",rec[i]);
+        }
+        output += divider;
+      }
+      System.out.println(output);
+    }
 }
