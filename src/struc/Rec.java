@@ -27,6 +27,10 @@ public class Rec {
         return entries.get(entries.size()-1);
     }
 
+    public void updateLastEntry(String value){
+        entries.get(entries.size()-1).setData(value);
+    }
+
     /** To be used for wSELECT */
     public ArrayList<Entry> getAllEntries(){
         return entries;

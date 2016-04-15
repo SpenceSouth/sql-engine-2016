@@ -27,6 +27,10 @@ public class Entry {
         return data;
     }
 
+    public void setData(String data){
+        this.data = data;
+    }
+
     public String getTimeStamp(){
         return timeStamp;
     }

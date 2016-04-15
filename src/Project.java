@@ -79,9 +79,15 @@ public class Project {
         ArrayList<String> params = new ArrayList<>();
         ArrayList<String> conditions = new ArrayList<>();
 
+        manager.select("people", params, conditions);
+
         params.add("name");
-        params.add("salary");
         conditions.add("name = 'Alex'");
+
+        manager.update("people", "name", "'Spence'", conditions);
+
+        params.clear();
+        conditions.clear();
 
         manager.select("people", params, conditions);
 

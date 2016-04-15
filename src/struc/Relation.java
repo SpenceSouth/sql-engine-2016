@@ -33,7 +33,36 @@ public class Relation {
         columns.add(record);
     }
 
-    public boolean update(Col record){
+    public boolean update(String param, String value, ArrayList<String> conditions){
+
+        ArrayList<Col> tempColumns = new ArrayList<>(columns);
+        HashSet<Integer> recordsToUpdate = new HashSet<>();
+        int numOfRecords = columns.get(0).size();
+
+        // Finds out which records need to be updated
+        for (int i = 0; i < numOfRecords; i++) {
+            for (Col column : tempColumns) {
+                if (predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData(), false)) {
+                    recordsToUpdate.add(i);
+                }
+            }
+        }
+
+        // Updates records
+        for(int i = 0; i < numOfRecords; i++){
+
+            for(Col column : tempColumns){
+
+                if(recordsToUpdate.contains(i) && column.getName().equals(param)) {
+
+                    // Update here
+                    column.getRec(i).getLastEntry().setData(value);
+
+                }
+            }
+
+            System.out.println();
+        }
 
         return false;
     }
@@ -99,7 +128,7 @@ public class Relation {
 
             for (int i = 0; i < numOfRecords; i++) {
                 for (Col column : tempColumns) {
-                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData(), column.getType())) {
+                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData())) {
                         recordsToRemove.add(i);
                     }
                 }
@@ -136,7 +165,7 @@ public class Relation {
 
             for (int i = 0; i < numOfRecords; i++) {
                 for (Col column : tempColumns) {
-                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData(), column.getType())) {
+                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData())) {
                         recordsToRemove.add(i);
                     }
                 }
@@ -181,7 +210,11 @@ public class Relation {
         return false;
     }
 
-    private boolean predicate(ArrayList<String> conditions, String name, String value, String type){
+    private boolean predicate(ArrayList<String> conditions, String name, String value){
+        return predicate(conditions, name, value, true);
+    }
+
+    private boolean predicate(ArrayList<String> conditions, String name, String value, boolean defaults){
 
         for(String condition : conditions){
             String[] split = condition.split(" ");
@@ -223,7 +256,7 @@ public class Relation {
 
         }
 
-        return true;
+        return defaults;
     }
 
     private boolean contains(ArrayList<String> list, String term){

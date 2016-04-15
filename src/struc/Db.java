@@ -48,6 +48,10 @@ public class Db {
         tables.get(table).select(params, conditions);
     }
 
+    public void update(String table, String param, String value, ArrayList<String> conditions){
+        tables.get(table).update(param, value, conditions);
+    }
+
     public String showTables(){
 
         String list = "";

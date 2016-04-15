@@ -70,6 +70,14 @@ public class DbManager {
         databases.get(database).select(table, params, conditions);
     }
 
+    public void update(String table, String param, String value, ArrayList<String> conditions){
+        update(current, table, param, value, conditions);
+    }
+
+    public void update(String database, String table, String param, String value, ArrayList<String> conditions){
+        databases.get(database).update(table, param, value, conditions);
+    }
+
     public boolean loadDatabase(String name){
         databases.put(name, new Db(name));
         current = name;
