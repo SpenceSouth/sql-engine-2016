@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import struc.DbManager;
+import struc.Relation;
 
 //Group A1
 //COP 4710 - Data Modeling
@@ -80,7 +81,22 @@ public class Project {
         ArrayList<String> params = new ArrayList<>();
         ArrayList<String> conditions = new ArrayList<>();
 
-        manager.select("people", params, conditions);
+        params.add("name");
+        params.add("age");
+        conditions.add("salary < 30000");
+
+        Relation r = manager.select("people", params, conditions);
+
+        params.clear();
+        conditions.clear();
+
+        params.add("name");
+        conditions.add("age > 30");
+
+        manager.select(r, params, conditions);
+
+        params.clear();
+        conditions.clear();
 
         params.add("name");
         conditions.add("name = 'Alex'");

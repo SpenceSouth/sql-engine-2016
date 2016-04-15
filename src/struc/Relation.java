@@ -154,7 +154,9 @@ public class Relation {
         return false;
     }
 
-    public boolean select(ArrayList<String> params, ArrayList<String> conditions){
+    public Relation select(ArrayList<String> params, ArrayList<String> conditions){
+
+        Relation derivedRelation = new Relation();
 
         if(params.size() == 0 && conditions.size() == 0){
 
@@ -168,6 +170,11 @@ public class Relation {
 
             for(int i = 0; i < numOfRecords; i++){
                 for(Col column : columns){
+
+                    if(i == 1){
+                        derivedRelation.insertColumn(column);
+                    }
+
                     System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
                 }
 
@@ -194,6 +201,10 @@ public class Relation {
 
                     if(!contains(params, column.getName()))
                         continue;
+
+                    if(i == 1){
+                        derivedRelation.insertColumn(column);
+                    }
 
                     System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
                 }
@@ -230,6 +241,10 @@ public class Relation {
 
                     if(recordsToRemove.contains(i)){
                         continue;
+                    }
+
+                    if(i == 1){
+                        derivedRelation.insertColumn(column);
                     }
 
                     System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
@@ -275,6 +290,10 @@ public class Relation {
                         continue;
                     }
 
+                    if(i == 1){
+                        derivedRelation.insertColumn(column);
+                    }
+
                     System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
                 }
 
@@ -289,7 +308,7 @@ public class Relation {
 
 
 
-        return false;
+        return derivedRelation;
     }
 
     private boolean predicate(ArrayList<String> conditions, String name, String value){

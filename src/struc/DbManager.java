@@ -62,12 +62,16 @@ public class DbManager {
         return databases.get(current).getTable(table);
     }
 
-    public void select(String table, ArrayList<String> params, ArrayList<String> conditions) {
-        select(current, table, params, conditions);
+    public Relation select(String table, ArrayList<String> params, ArrayList<String> conditions) {
+        return select(current, table, params, conditions);
     }
 
-    public void select(String database, String table, ArrayList<String> params, ArrayList<String> conditions){
-        databases.get(database).select(table, params, conditions);
+    public Relation select(Relation table, ArrayList<String> params, ArrayList<String> conditions) {
+        return databases.get(current).select(table, params, conditions);
+    }
+
+    public Relation select(String database, String table, ArrayList<String> params, ArrayList<String> conditions){
+        return databases.get(database).select(table, params, conditions);
     }
 
     public void update(String table, String param, String value, ArrayList<String> conditions){

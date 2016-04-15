@@ -44,8 +44,12 @@ public class Db {
         tables.get(table).insertColumn(col);
     }
 
-    public void select(String table, ArrayList<String> params, ArrayList<String> conditions){
-        tables.get(table).select(params, conditions);
+    public Relation select(String table, ArrayList<String> params, ArrayList<String> conditions){
+        return tables.get(table).select(params, conditions);
+    }
+
+    public Relation select(Relation table, ArrayList<String> params, ArrayList<String> conditions){
+        return table.select(params, conditions);
     }
 
     public void update(String table, String param, String value, ArrayList<String> conditions){
