@@ -150,6 +150,9 @@ public class Project {
         manager.wSelect("people", params, conditions)*/;
 
         // DEBUG CODE: END
+        if(1 == 1){
+            System.exit(639);
+        }
 
         // Runs the program in console mode
         if (args.length == 0) {

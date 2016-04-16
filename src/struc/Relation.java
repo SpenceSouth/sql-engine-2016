@@ -650,9 +650,7 @@ public class Relation {
             ArrayList<String> p = new ArrayList<>();
             ArrayList<String> c = new ArrayList<>();
 
-            //c.add(groupBy + " = " + d);
-            c.add("name = 'Mark'");
-            conditions.add("name = 'Mark'");
+            c.add(groupBy + " = " + d);
 
             Relation r = this.select(p, c);
             tables.put(d, r);
@@ -683,7 +681,7 @@ public class Relation {
             for(int i = 0; i < params.size(); i++){
 
                 if(aggregates.get(i).isEmpty()){
-                    values.add(getColumnByName(params.get(i)).getRec(0).getLastEntry().getData());
+                    values.add(r.getColumnByName(params.get(i)).getRec(i).getLastEntry().getData());
                 }
                 else{
                     if(aggregates.get(i).equals("avg")){
@@ -733,10 +731,13 @@ public class Relation {
     }
 
     private double calculateAverage(ArrayList <Double> marks) {
-        int sum = 0;
-        for (int i=0; i< marks.size(); i++) {
-            sum += i;
+
+        double sum = 0;
+
+        for (int i = 0; i< marks.size(); i++) {
+            sum += marks.get(i);
         }
+
         return sum / marks.size();
     }
 
