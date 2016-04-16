@@ -697,7 +697,13 @@ public class Relation {
                         values.add(Integer.toString(r.count(p, c)));
                     }
                     else if(aggregates.get(i).equals("sum")){
+                        ArrayList<String> c = new ArrayList<>();
+                        c.add(groupBy + " = " + d);
 
+                        ArrayList<String> p = new ArrayList<>();
+                        p.add(params.get(i));
+
+                        values.add(Double.toString(r.sum(p, c)));
                     }
                     else if(aggregates.get(i).equals("min")){
 
@@ -720,6 +726,18 @@ public class Relation {
 
         return table;
 
+    }
+
+    public double sum(ArrayList<String> params, ArrayList<String> conditions){
+
+        double result = 0;
+        Relation r = select(params, conditions);
+
+        for(Rec rec : r.columns.get(0).getRecs()){
+            result += Double.parseDouble(rec.getLastEntry().getData());
+        }
+
+        return result;
     }
 
     public int count(ArrayList<String> params, ArrayList<String> conditions){
