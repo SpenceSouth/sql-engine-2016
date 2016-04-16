@@ -9,11 +9,15 @@ public class Col {
 
     //Decs
     private ArrayList<Rec> recs = new ArrayList<>();
-    private String type;
+    private String type = "varchar(255)";
     private boolean nullable;
     private int maxLength = 255;
     private int decimalsAllowed = 0;
     private String name;
+
+    public Col(){
+
+    }
 
     public Col(String type){
         this.type = type;
@@ -41,6 +45,14 @@ public class Col {
         this.maxLength = maxLength;
         this.decimalsAllowed = decimalsAllowed;
         this.nullable = nullable;
+    }
+
+    public void copyAttributes(Col col){
+        this.type = col.getType();
+        this.nullable = col.getNullable();
+        this.maxLength = col.getMaxLength();
+        this.decimalsAllowed = col.getDecimalsAllowed();
+        this.name = col.getName();
     }
 
     public String getType(){

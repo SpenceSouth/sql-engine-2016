@@ -76,6 +76,10 @@ public class Db {
         tables.get(table).wSelect(params, conditions);
     }
 
+    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
+        return tables.get(table).group(params, aggregates, conditions, groupBy, type);
+    }
+
     public String showTables(){
 
         String list = "";

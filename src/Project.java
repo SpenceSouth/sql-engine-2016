@@ -79,18 +79,33 @@ public class Project {
         manager.loadDatabase("a");
 
         ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> aggregate = new ArrayList<>();
         ArrayList<String> conditions = new ArrayList<>();
 
-        params.add("name");
-        params.add("age");
-        conditions.add("salary < 30000");
+        conditions.add("name = 'Mark'");
 
-        Relation r = manager.select("people", params, conditions);
+        System.out.println("Test #1");
+        manager.select("people", params, conditions);
 
         params.clear();
         conditions.clear();
 
         params.add("name");
+        params.add("age");
+        aggregate.add("");
+        aggregate.add("avg");
+        //conditions.add("salary < 30000");
+
+        System.out.println("Test #2");
+
+        Relation r = manager.group("people", params, aggregate, conditions, "name", "String");
+
+        params.clear();
+        conditions.clear();
+
+        manager.select(r, params, conditions);
+
+        /*params.add("name");
         conditions.add("age > 30");
 
         manager.select(r, params, conditions);
@@ -132,7 +147,7 @@ public class Project {
 
         manager.select("people", params, conditions);
 
-        manager.wSelect("people", params, conditions);
+        manager.wSelect("people", params, conditions)*/;
 
         // DEBUG CODE: END
 

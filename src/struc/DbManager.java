@@ -114,6 +114,10 @@ public class DbManager {
         databases.get(current).getTable(table).wSelect(params, conditions);
     }
 
+    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
+        return databases.get(current).getTable(table).group(params, aggregates, conditions, groupBy, type);
+    }
+
     public boolean loadDatabase(String name){
         databases.put(name, new Db(name));
         current = name;
