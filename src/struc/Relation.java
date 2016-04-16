@@ -685,10 +685,16 @@ public class Relation {
                 }
                 else{
                     if(aggregates.get(i).equals("avg")){
-                        values.add(Double.toString(r.average(new ArrayList<String>(), new ArrayList<String>(), params.get(i))));
+                        values.add(Double.toString(r.average(params.get(i))));
                     }
                     else if(aggregates.get(i).equals("count")){
+                        ArrayList<String> c = new ArrayList<>();
+                        c.add(groupBy + " = " + d);
 
+                        ArrayList<String> p = new ArrayList<>();
+                        p.add(params.get(i));
+
+                        values.add(Integer.toString(r.count(p, c)));
                     }
                     else if(aggregates.get(i).equals("sum")){
 
@@ -717,10 +723,18 @@ public class Relation {
     }
 
     public int count(ArrayList<String> params, ArrayList<String> conditions){
-        return select(params, conditions).getRecordSize();
+
+        HashSet<String> distinctValues = new HashSet<>();
+        Relation r = select(params, conditions);
+
+        for(Rec rec : r.columns.get(0).getRecs()){
+            distinctValues.add(rec.getLastEntry().getData());
+        }
+
+        return distinctValues.size();
     }
 
-    public double average(ArrayList<String> params, ArrayList<String> conditions, String field){
+    public double average(String field){
         ArrayList<Double> toBeAveraged = new ArrayList<>();
 
         for(Rec record : getColumnByName(field).getRecs()){

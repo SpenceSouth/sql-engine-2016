@@ -87,13 +87,21 @@ public class Project {
         System.out.println("Test #1");
         manager.select("people", params, conditions);
 
+        ArrayList<String> values = new ArrayList<>();
+
+        values.add("'Carl'");
+        values.add("14");
+        values.add("51334");
+
+        manager.insert("people", values);
+
         params.clear();
         conditions.clear();
 
         params.add("name");
         params.add("age");
         aggregate.add("");
-        aggregate.add("avg");
+        aggregate.add("count");
         //conditions.add("salary < 30000");
 
         System.out.println("Test #2");
@@ -149,10 +157,11 @@ public class Project {
 
         manager.wSelect("people", params, conditions)*/;
 
-        // DEBUG CODE: END
         if(1 == 1){
             System.exit(639);
         }
+
+        // DEBUG CODE: END
 
         // Runs the program in console mode
         if (args.length == 0) {
