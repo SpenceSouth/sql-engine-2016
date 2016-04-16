@@ -715,6 +715,13 @@ public class Relation {
                         values.add(Double.toString(r.min(p, c)));
                     }
                     else if(aggregates.get(i).equals("max")){
+                        ArrayList<String> c = new ArrayList<>();
+                        c.add(groupBy + " = " + d);
+
+                        ArrayList<String> p = new ArrayList<>();
+                        p.add(params.get(i));
+
+                        values.add(Double.toString(r.max(p, c)));
 
                     }
                     else{
@@ -732,6 +739,23 @@ public class Relation {
 
         return table;
 
+    }
+
+    public double max(ArrayList<String> params, ArrayList<String> conditions){
+
+        double result = Double.MIN_VALUE;
+        Relation r = select(params, conditions);
+
+        for(Rec rec : r.columns.get(0).getRecs()){
+            double value = Double.parseDouble(rec.getLastEntry().getData());
+
+            if(value > result){
+                result = value;
+            }
+
+        }
+
+        return result;
     }
 
     public double min(ArrayList<String> params, ArrayList<String> conditions){

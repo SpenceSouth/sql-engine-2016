@@ -101,7 +101,7 @@ public class Project {
         params.add("name");
         params.add("age");
         aggregate.add("");
-        aggregate.add("min");
+        aggregate.add("max");
         //conditions.add("salary < 30000");
 
         System.out.println("Test #2");
