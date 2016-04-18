@@ -36,7 +36,7 @@ public class Debuggable extends Formatting{
       if(DEBUG_ON)
         System.out.println("exception in write "+ e);
     }
-  }
+  } 
   public static void append(String filename, String textVal){
     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
     try {

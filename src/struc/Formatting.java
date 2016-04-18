@@ -8,8 +8,8 @@ public abstract class Formatting{
   Formatting(){
     maxLength = 25;
   }
-  public void setMaxColumnLength(int maxColLength){
-    maxLength = maxColLength;
+  public void setMaxLength(int maxLength){
+    this.maxLength = maxLength;
   }
   public String toString(){
     return "";
