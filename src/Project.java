@@ -117,7 +117,7 @@ public class Project {
         manager.select("people", EMPTY_LIST, EMPTY_LIST);
 
 
-        Relation r1 = manager.select("birthday", new ArrayList<String>(), new ArrayList<String>());
+        Relation r1 = manager.select("birthday", EMPTY_LIST, EMPTY_LIST);
         Relation joinedTable = manager.join("people", "birthday", "age");
 
         joinedTable.select(EMPTY_LIST, EMPTY_LIST);
