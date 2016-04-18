@@ -96,6 +96,69 @@ public class Db {
         }
     }
 
+    public Relation join(Relation r1, Relation r2, String joinField){
+
+        Relation derivedRelation = new Relation();
+        Col joinCol1 = new Col();
+        Col joinCol2 = new Col();
+
+        // Get Columns for new relation
+
+        for(Col col : r1.getColumns()){
+            Col c = new Col();
+            c.copyAttributes(col);
+            derivedRelation.insertColumn(c);
+
+            if(c.getName().equals(joinField)){
+                joinCol1.copyAttributesAndRecords(r1.getColumnByName(col.getName()));
+            }
+
+        }
+
+        for(Col col : r2.getColumns()){
+            Col c = new Col();
+            c.copyAttributes(col);
+            derivedRelation.insertColumn(c);
+
+            if(col.getName().equals(joinField)) {
+                joinCol2.copyAttributesAndRecords(r2.getColumnByName(col.getName()));
+            }
+
+        }
+
+        ArrayList<Integer> r1RowsToBeJoined = new ArrayList<>();
+        ArrayList<Integer> r2RowsToBeJoined = new ArrayList<>();
+
+        // Examine the records in each table from a column perspective
+        for(int i = 0; i < joinCol1.size(); i++){
+
+            for(int j = 0; j < joinCol2.size(); j++){
+                if(joinCol1.getRec(i).getLastEntry().getData().equals(joinCol2.getRec(j).getLastEntry().getData())){
+                    r1RowsToBeJoined.add(i);
+                    r2RowsToBeJoined.add(j);
+                }
+            }
+
+        }
+
+
+        System.out.println(derivedRelation.getColumns());
+
+        for(int i = 0; i < r1RowsToBeJoined.size(); i++){
+            ArrayList<Rec> recs1 = r1.getRecordsByRowIndex(r1RowsToBeJoined.get(i));
+            ArrayList<Rec> recs2 = r2.getRecordsByRowIndex(r2RowsToBeJoined.get(i));
+
+            recs1.addAll(recs2);
+            derivedRelation.insertRecordsIntoColumns(recs1);
+        }
+
+        // Delete the duplicated joined row from the derived relation
+        derivedRelation.deleteColumnByName(joinField);
+
+
+        return derivedRelation;
+    }
+
     public int size(){
         return tables.size();
     }

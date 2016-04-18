@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<birthday table_Column_Count="3" table_Record_Count="4">
+    <age is_null_allowed="false" restriction="5" restriction_2="0" type="int">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">24</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">22</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">82</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">90</data>
+        </Record3>
+    </age>
+    <month is_null_allowed="true" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'June'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'May'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'April'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'December'</data>
+        </Record3>
+    </month>
+</birthday>

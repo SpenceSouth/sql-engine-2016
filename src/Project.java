@@ -28,6 +28,7 @@ import struc.Relation;
 
 public class Project {
     // all the stuff needed for Project execution
+    public static final ArrayList<String> EMPTY_LIST = new ArrayList<>();
     public static boolean display_debugger_stuff = false;
     public static boolean auto_input = false;
     public static Boolean current_condition = null;
@@ -90,7 +91,7 @@ public class Project {
         ArrayList<String> values = new ArrayList<>();
 
         values.add("'Carl'");
-        values.add("14");
+        values.add("22");
         values.add("51334");
 
         manager.insert("people", values);
@@ -112,6 +113,14 @@ public class Project {
         conditions.clear();
 
         manager.select(r, params, conditions);
+
+        manager.select("people", EMPTY_LIST, EMPTY_LIST);
+
+
+        Relation r1 = manager.select("birthday", new ArrayList<String>(), new ArrayList<String>());
+        Relation joinedTable = manager.join("people", "birthday", "age");
+
+        joinedTable.select(EMPTY_LIST, EMPTY_LIST);
 
         /*params.add("name");
         conditions.add("age > 30");

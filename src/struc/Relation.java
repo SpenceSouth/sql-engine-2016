@@ -69,7 +69,7 @@ public class Relation {
 
     }
 
-    private Col getColumnByName(String name){
+    public Col getColumnByName(String name){
         for(Col col : columns){
             if(col.getName().equals(name)){
                 return col;
@@ -741,7 +741,7 @@ public class Relation {
 
     }
 
-    public double max(ArrayList<String> params, ArrayList<String> conditions){
+    private double max(ArrayList<String> params, ArrayList<String> conditions){
 
         double result = Double.MIN_VALUE;
         Relation r = select(params, conditions);
@@ -758,7 +758,7 @@ public class Relation {
         return result;
     }
 
-    public double min(ArrayList<String> params, ArrayList<String> conditions){
+    private double min(ArrayList<String> params, ArrayList<String> conditions){
 
         double result = Double.MAX_VALUE;
         Relation r = select(params, conditions);
@@ -775,7 +775,7 @@ public class Relation {
         return result;
     }
 
-    public double sum(ArrayList<String> params, ArrayList<String> conditions){
+    private double sum(ArrayList<String> params, ArrayList<String> conditions){
 
         double result = 0;
         Relation r = select(params, conditions);
@@ -787,7 +787,7 @@ public class Relation {
         return result;
     }
 
-    public int count(ArrayList<String> params, ArrayList<String> conditions){
+    private int count(ArrayList<String> params, ArrayList<String> conditions){
 
         HashSet<String> distinctValues = new HashSet<>();
         Relation r = select(params, conditions);
@@ -799,7 +799,7 @@ public class Relation {
         return distinctValues.size();
     }
 
-    public double average(String field){
+    private double average(String field){
         ArrayList<Double> toBeAveraged = new ArrayList<>();
 
         for(Rec record : getColumnByName(field).getRecs()){
@@ -838,6 +838,11 @@ public class Relation {
 
         return values;
     }
+
+    public ArrayList<Col> getColumns(){
+        return columns;
+    }
+
 
     //Display Functions
     public void displayTable(ArrayList<String> headers,ArrayList<String[]> records){
@@ -883,5 +888,11 @@ public class Relation {
         output += divider;
       }
       System.out.println(output);
+    }
+
+    /** NAGA: Table needs to be displayed on to string call */
+    @Override
+    public String toString(){
+        return super.toString();
     }
 }
