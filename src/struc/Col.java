@@ -55,6 +55,15 @@ public class Col {
         this.name = col.getName();
     }
 
+    public void copyAttributesAndRecords(Col col){
+        this.type = col.getType();
+        this.nullable = col.getNullable();
+        this.maxLength = col.getMaxLength();
+        this.decimalsAllowed = col.getDecimalsAllowed();
+        this.name = col.getName();
+        this.recs = col.getRecs();
+    }
+
     public String getType(){
         return type;
     }
@@ -105,6 +114,11 @@ public class Col {
 
     public int getDecimalsAllowed(){
         return decimalsAllowed;
+    }
+
+    @Override
+    public String toString(){
+        return getName() + ":" + getType();
     }
 
 }

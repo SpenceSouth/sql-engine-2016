@@ -239,4 +239,16 @@ public class DbManager {
 
     }
 
+    public Relation join(Relation r1, Relation r2, String field){
+        return databases.get(current).join(r1, r2, field);
+    }
+
+    public Relation join(String r1, String r2, String field){
+
+        Relation relation1 = databases.get(current).getTable(r1);
+        Relation relation2 = databases.get(current).getTable(r2);
+
+        return databases.get(current).join(relation1, relation2, field);
+    }
+
 }
