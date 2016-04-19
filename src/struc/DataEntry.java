@@ -35,9 +35,9 @@ public class DataEntry extends Debuggable{
         return timeStamp;
     }
     public String toStringW(){
-      return timeStamp+" : "+String.format("%"+maxLength+"$s",data);
+      return timeStamp+" : "+String.format("%-"+maxLength+"$s",data);
     }
     public String toString(){
-      return String.format("%"+maxLength+"$s",data);
+      return String.format("%-"+maxLength+"$s",data);
     }
 }
