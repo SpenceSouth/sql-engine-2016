@@ -124,8 +124,7 @@ public class DbManager {
         loadXML(name);
         return false;
     }
-
-    private void loadXML(String databaseName){
+private void loadXML(String databaseName){
         try{
             String fileName = "databases/" + databaseName;
             File dir = new File(fileName);
@@ -167,15 +166,15 @@ public class DbManager {
                         if (fieldTag.getNodeType() == Node.ELEMENT_NODE) {
                             //getting the table attributes.
                             Element eElement = (Element) fieldTag;
-                            String isNullAllowed = eElement.getAttribute("is_null_allowed");
-                            String restriction = eElement.getAttribute("restriction");
-                            String restriction2 = eElement.getAttribute("restriction_2");
-                            String type = eElement.getAttribute("type");
+                            String isNullAllowed = eElement.getAttribute("isNullable");
+                            String maxLength = eElement.getAttribute("Max_Length");
+                            String decimalsAllowed = eElement.getAttribute("Decimals_Allowed");
+                            String type = eElement.getAttribute("Type");
 
                             Col col = new Col(columnName,
                                             type,
-                                            Integer.parseInt(restriction),
-                                            Integer.parseInt(restriction2),
+                                            Integer.parseInt(maxLength),
+                                            Integer.parseInt(decimalsAllowed),
                                             Boolean.parseBoolean(isNullAllowed));
 
                             //adding the table structure information to the database object.
@@ -194,32 +193,38 @@ public class DbManager {
                             //for each record tag.
                             for (int i = 0; i < recordNodeList.getLength(); i++) {
                                 Node recordNode = recordNodeList.item(i);
-                                String recordNodeName = recordNode.getNodeName();
+                                //String recordNodeName = recordNode.getNodeName();
+                                
+                                //List of RecordNodes
                                 NodeList specificRecordNode = recordNode.getChildNodes();
 
-                                ArrayList<String> dataArrayList = new ArrayList<String>();
+                                HashMap<String, String> dataArrayList = new HashMap<String, String>();
                                 String timestampData = null;
 
                                 //for each specific example record0 in each column.
                                 for (int j = 0; j < specificRecordNode.getLength(); j++) {
-                                    if (specificRecordNode.item(j).getNodeType() == recordNode.ELEMENT_NODE) {
+                                    if (specificRecordNode.item(j).getNodeType() == recordNode.ELEMENT_NODE) 
+                                    {
+                                        
                                         //grab each specific record in each column.
-                                        Node dataNodeList = specificRecordNode.item(j);
                                         Element dataElement = (Element) specificRecordNode.item(j);
 
                                         //get the data from the data tag.
                                         String data = dataElement.getTextContent();
                                         //get the timestamp attribrute.
-                                        timestampData = dataElement.getAttribute("timestamp");
-                                        dataArrayList.add(data);
-                                        col.addRec(data, timestampData);
+                                        timestampData = dataElement.getAttribute("Timestamp");
+                                        //create an arrayList of recs
+                                        dataArrayList.put(data, timestampData);
+                                        //col.addRec(dataArrayList);
                                     }
+                                  
                                 }
+                                if (dataArrayList.size() > 0)
+                                col.addRec(dataArrayList);  
                                 //save the data and timestamp into the Records obj.
                                 /*Record records = new Record(timestampData, dataArrayList);
                                 Database.tables.get(tableName).records.add(records);*/
                             }
-
                             currentDatabase().insertColumn(tableName, col);
 
                         }
@@ -235,8 +240,145 @@ public class DbManager {
         //Database.database_name = Database.temp_database_name;
     }
 
-    private void saveXML(String databaseName){
+    public void saveXML(String databaseName)
+    {
+        String DbName = this.currentDatabase().getName();
+        Db Database = this.currentDatabase();
+        if (DbName != null) {
+            
+            try {
+                // can only do this command if we're working on an active database
+                // first we check if the database exists
+                String fileName = "databases/" + DbName;
+                File theDir = new File(fileName);
 
+                // if the directory does not exist, create it
+                if (!theDir.exists()) {
+                    try {
+                        theDir.mkdir();
+                    } catch (Exception se) {
+                        // handle it
+                        se.printStackTrace();
+                    }
+                }
+                // iterate through all tables
+                Iterator<String> e = Database.getTableHashMap().keySet().iterator();
+                String key;
+                while (e.hasNext()) 
+                {
+                    DocumentBuilderFactory dbFactory
+                            = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder dBuilder
+                            = dbFactory.newDocumentBuilder();
+                    Document doc = dBuilder.newDocument();
+                    key = e.next();
+
+                    //xml writing
+                    //count of how many columns in the table.
+                    ArrayList<Col> colList = Database.getTable(key).getAllColumns();
+                    int size = colList.size();
+                    int sizeOfRecords = 0;
+                    
+                    //create first tag which should be a table tag.
+                    Element rootElement = doc.createElement(key);
+                    //create the table count attr.
+                    Attr attrTableCount = doc.createAttribute("Column_Count");
+                    attrTableCount.setValue(size+"");
+                    rootElement.setAttributeNode(attrTableCount);
+                    
+                    //add the table tag
+                    doc.appendChild(rootElement);
+
+                    
+                    //writing to XML
+                    //for each Col in the colList
+                    for (Col column : colList) 
+                    {
+                        // iterate through each column
+
+                        //Assign each value in the database object to a local
+                        //String value and then assign it to make it more readable. 
+                        String columnName = column.getName();
+                        String columnType = column.getType();
+                        int maxLength = column.getMaxLength();
+                        int decimalsAllowed = column.getDecimalsAllowed();
+                        String isNullAllowed = column.getNullable()+"";
+
+                        //create column tag and it's attrs. 
+                        Element fieldName = doc.createElement(columnName);
+                        Attr attrType = doc.createAttribute("Type");
+                        attrType.setValue(columnType);
+                        fieldName.setAttributeNode(attrType);
+
+                        Attr attrRest = doc.createAttribute("Max_Length");
+                        attrRest.setValue(maxLength + "");
+                        fieldName.setAttributeNode(attrRest);
+
+                        Attr attrRest2 = doc.createAttribute("Decimals_Allowed");
+                        attrRest2.setValue(decimalsAllowed + "");
+                        fieldName.setAttributeNode(attrRest2);
+
+                        Attr attrNull = doc.createAttribute("isNullable");
+                        attrNull.setValue(isNullAllowed);
+                        fieldName.setAttributeNode(attrNull);
+                        
+                        //add fieldName tag under the table tag. 
+                        rootElement.appendChild(fieldName);
+                        
+                        //get the records in this Column. 
+                        ArrayList<Rec> recordList = column.getRecs();
+                        sizeOfRecords = recordList.size();
+                        //for each record in recordList
+                        for(Rec record: recordList)
+                        {
+                            Element recordElement = doc.createElement("Record");
+                            //get all the data entries in the record. 
+                            ArrayList<DataEntry> dataList = record.getAllEntries();
+                            
+                            //for each data node in DataList
+                            for (DataEntry data : dataList)
+                            {
+                                Element dataElement = doc.createElement("Data");
+                                Attr attr = doc.createAttribute("Timestamp");
+                                attr.setValue(data.getTimeStamp());
+                                dataElement.appendChild(doc.createTextNode(data.getData()));
+                                dataElement.setAttributeNode(attr);
+                                
+                                //create a data tag under each record tag.
+                                recordElement.appendChild(dataElement);
+                            }
+                            //create a Record tag under each field name.
+                            fieldName.appendChild(recordElement);
+                        }
+                    }
+                    
+                    //create the attr that will store the number of records in the table. 
+                    Attr attrRecordCount = doc.createAttribute("Record_Count");
+                    attrRecordCount.setValue(sizeOfRecords + "");
+                    rootElement.setAttributeNode(attrRecordCount);
+
+                    // write the content into an xml file.
+                    TransformerFactory transformerFactory
+                            = TransformerFactory.newInstance();
+                    Transformer transformer
+                            = transformerFactory.newTransformer();
+                    DOMSource source = new DOMSource(doc);
+
+                    StreamResult result
+                            = new StreamResult(new File(fileName + "/" + key + ".xml"));
+                    transformer.transform(source, result);
+
+//                    // Output XML written to console for testing
+//                    StreamResult consoleResult =
+//                            new StreamResult(System.out);
+//                    transformer.transform(source, consoleResult);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            System.out.println("You are not working in an active database; please CREATE or LOAD a database.");
+        }
     }
 
     public Relation join(Relation r1, Relation r2, String field){
