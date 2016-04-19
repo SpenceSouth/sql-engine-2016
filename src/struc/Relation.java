@@ -79,6 +79,10 @@ public class Relation {
         return null;
     }
 
+    public ArrayList<Col> getColumns ()
+    {
+        return columns;
+    }
     public void update(String param, String value, ArrayList<String> conditions){
 
         ArrayList<Col> tempColumns = new ArrayList<>(columns);
@@ -502,9 +506,9 @@ public class Relation {
             for(int i = 0; i < numOfRecords; i++){
                 for(Col column : columns){
 
-                    ArrayList<Entry> entries = column.getRec(i).getAllEntries();
+                    ArrayList<DataEntry> entries = column.getRec(i).getAllEntries();
 
-                    for(Entry entry : entries){
+                    for(DataEntry entry : entries){
                         System.out.print(entry.getData() + "\t" + entry.getTimeStamp() + "\t");
                     }
                 }
@@ -533,9 +537,9 @@ public class Relation {
                     if(!contains(params, column.getName()))
                         continue;
 
-                    ArrayList<Entry> entries = column.getRec(i).getAllEntries();
+                    ArrayList<DataEntry> entries = column.getRec(i).getAllEntries();
 
-                    for(Entry entry : entries){
+                    for(DataEntry entry : entries){
                         System.out.print(entry.getData() + "\t" + entry.getTimeStamp() + "\t");
                     }
                 }
@@ -838,11 +842,6 @@ public class Relation {
 
         return values;
     }
-
-    public ArrayList<Col> getColumns(){
-        return columns;
-    }
-
 
     //Display Functions
     public void displayTable(ArrayList<String> headers,ArrayList<String[]> records){

@@ -275,7 +275,7 @@ private void loadXML(String databaseName){
 
                     //xml writing
                     //count of how many columns in the table.
-                    ArrayList<Col> colList = Database.getTable(key).getAllColumns();
+                    ArrayList<Col> colList = Database.getTable(key).getColumns();
                     int size = colList.size();
                     int sizeOfRecords = 0;
                     

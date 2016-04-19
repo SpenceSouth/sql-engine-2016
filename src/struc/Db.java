@@ -35,6 +35,10 @@ public class Db {
         return tables.get(name);
     }
 
+    public HashMap<String, Relation> getTableHashMap(){
+        return tables;
+    }
+
     public boolean dropTable(String name){
 
         return false;

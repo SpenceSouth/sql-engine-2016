@@ -92,6 +92,9 @@ public class Col {
         return recs.get(index);
     }
 
+    public void addRec(HashMap<String, String> dataArrayList) {
+        recs.add(new Rec(dataArrayList));
+
     public void deleteRec(int index){
         recs.remove(index);
     }

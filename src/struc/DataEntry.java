@@ -7,18 +7,18 @@ import java.util.Date;
 /**
  * Created by spencesouthard on 4/11/16.
  */
-public class Entry {
+public class DataEntry {
 
     //Dec
     private String data;
     private String timeStamp;
 
-    public Entry(String data){
+    public DataEntry(String data){
         this.timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         this.data = data;
     }
 
-    public Entry(String data, String timeStamp){
+    public DataEntry(String data, String timeStamp){
         this.data = data;
         this.timeStamp = timeStamp;
     }

@@ -1,6 +1,9 @@
 package struc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by spencesouthard on 4/11/16.
@@ -8,22 +11,31 @@ import java.util.ArrayList;
 public class Rec {
 
     //Dec
-    private ArrayList<Entry> entries = new ArrayList<>();
+    private ArrayList<DataEntry> entries = new ArrayList<>();
 
     public Rec(){
 
     }
 
     public Rec(String data){
-        addEntry(new Entry(data));
+        addEntry(new DataEntry(data));
     }
 
     public Rec(String data, String timestamp){
         addEntry(data, timestamp);
     }
 
+    public Rec(ArrayList<String> dataArrayList, String timestampData) {
+       addEntry(dataArrayList, timestampData);
+    }
+
+    Rec(HashMap<String, String> dataArrayList) {
+        addEntry(dataArrayList);
+    }
+    
+
     /** To be used for SELECT */
-    public Entry getLastEntry(){
+    public DataEntry getLastEntry(){
         return entries.get(entries.size()-1);
     }
 
@@ -32,22 +44,29 @@ public class Rec {
     }
 
     /** To be used for wSELECT */
-    public ArrayList<Entry> getAllEntries(){
+    public ArrayList<DataEntry> getAllEntries(){
         return entries;
     }
 
-    private void addEntry(Entry entry){
+    private void addEntry(DataEntry entry){
         entries.add(entry);
     }
 
     public void addEntry(String data){
-        entries.add(new Entry(data));
+        entries.add(new DataEntry(data));
     }
 
     private void addEntry(String data, String timestamp){
-        entries.add(new Entry(data, timestamp));
+        entries.add(new DataEntry(data, timestamp));
     }
 
+    private void addEntry(HashMap<String, String> dataArrayList) 
+    {
+        for(Entry<String, String> entry: dataArrayList.entrySet() )
+        {
+            entries.add(new DataEntry(entry.getKey(), entry.getValue()));
+        }
+    }
     public int size(){
         return entries.size();
     }
