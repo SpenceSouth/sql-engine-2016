@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * Created by spencesouthard on 4/11/16.
  */
-public class DataEntry {
+public class DataEntry extends Debuggable{
 
     //Dec
     private String data;
@@ -34,5 +34,10 @@ public class DataEntry {
     public String getTimeStamp(){
         return timeStamp;
     }
-
+    public String toStringW(){
+      return timeStamp+" : "+String.format("%"+maxLength+"$s",data);
+    }
+    public String toString(){
+      return String.format("%"+maxLength+"$s",data);
+    }
 }
