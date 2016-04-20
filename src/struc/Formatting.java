@@ -4,7 +4,7 @@ import java.util.*;
 import java.text.*;
 
 public abstract class Formatting{
-  private int maxLength;
+  int maxLength;
   Formatting(){
     maxLength = 25;
   }

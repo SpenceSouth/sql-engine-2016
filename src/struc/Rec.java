@@ -24,11 +24,7 @@ public class Rec {
     public Rec(String data, String timestamp){
         addEntry(data, timestamp);
     }
-
-    public Rec(ArrayList<String> dataArrayList, String timestampData) {
-       addEntry(dataArrayList, timestampData);
-    }
-
+    
     Rec(HashMap<String, String> dataArrayList) {
         addEntry(dataArrayList);
     }

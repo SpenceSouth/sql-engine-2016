@@ -19,13 +19,13 @@ public class Debuggable extends Formatting{
   public void setFile(String filename){
     this.filename = filename;
   }
-  public static void appendln(String textVal){
+  public void appendln(String textVal){
     append(textVal+'\n');
   }
-  public static void appendln(String filename, String textVal){
+  public void appendln(String filename, String textVal){
     append(filename, textVal+'\n');
   }
-  public static void append(String textVal){
+  public void append(String textVal){
     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(this.filename , true));
@@ -37,7 +37,7 @@ public class Debuggable extends Formatting{
         System.out.println("exception in write "+ e);
     }
   } 
-  public static void append(String filename, String textVal){
+  public void append(String filename, String textVal){
     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(filename , true));
