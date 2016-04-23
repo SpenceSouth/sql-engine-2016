@@ -881,7 +881,7 @@ public class Relation {
     private String displayTable(ArrayList<String> headers,ArrayList<String[]> records){
 
       //Validation of Structure passed in 
-      //Checks that each element has the same number of fields and finds each fields max size which
+      //Checks that each element has the same number of fields and finds each field's max size which
       //must be less than or equal to 25 else it will default to 25
       int[] colSize = new int[headers.size()];
       for(String[] rec : records){
@@ -954,5 +954,33 @@ public class Relation {
 
         return displayTable(headers, records);
 
+    }
+
+    public String toStringWSelect(){
+
+        ArrayList<String> headers = new ArrayList<>();
+        ArrayList<String[]> records = new ArrayList<>();
+
+        for (Col col : columns){
+            headers.add(col.getName());
+        }
+
+        if(getRecordSize() < 1){
+            return headers.toString();
+        }
+
+        for(int i = 0; i < getRecordSize(); i++){
+
+            ArrayList<Rec> recs = getRecordsByRowIndex(i);
+            String[] r = new String[recs.size()];
+
+            for(int j = 0; j < recs.size(); j++){
+                r[j] = recs.get(j).getLastEntry().getData();
+            }
+
+            records.add(r);
+        }
+
+        return displayTable(headers, records);
     }
 }

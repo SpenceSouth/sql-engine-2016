@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<S table_Column_Count="5" table_Record_Count="5">
+    <SNO is_null_allowed="false" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S1'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S2'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S3'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S4'</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S5'</data>
+		</Record4>
+    </SNO>
+    <SNAME is_null_allowed="true" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Job'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Baker'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Kirby'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Sims'</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Jones'</data>
+		</Record4>
+    </SNAME>
+	<QUOTA is_null_allowed="true" restriction="5" restriction_2="0" type="int">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">4000</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">20000</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">6000</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">3000</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">30000</data>
+		</Record4>
+    </QUOTA>
+	<CITY is_null_allowed="true" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Dallas'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Chicago'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Phoenix'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'San Diego'</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'New York'</data>
+		</Record4>
+    </CITY>
+</S>
