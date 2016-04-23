@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -50,13 +50,25 @@ public class Console {
         // Capture first token to send to appropriate regular expressions
         String first = input.split(" ")[0];
 
+        Relation r;
+
         switch (first.toUpperCase()){
 
             case "SELECT":
+                r = select(input);
+                if(r == null){
+                    System.out.println("No data to be returned");
+                    break;
+                }
                 print(select(input).toString());
                 break;
             case "WSELECT":
-                print(select(input).toStringWSelect());
+                r = select(input);
+                if(r == null){
+                    System.out.println("No data to be returned");
+                    break;
+                }
+                print(select(input).toString());
                 break;
             case "INSERT":
                 insert(input);
@@ -227,11 +239,165 @@ public class Console {
 
             return select(inputWithoutJoin);
         }
+        else if(input.toUpperCase().contains("GROUP BY GROUPING SETS")) {
+
+            if (DEBUG)
+                print("Entering GROUP BY");
+
+            String groupings = "";
+            String aggregates = "";
+            final String EMPTY = "";
+
+            Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) " +
+                    "(GROUPING|grouping) (SETS|sets) (.*)(.*)");
+            Matcher matcher = pattern.matcher(input.replace(";", ""));
+
+            while (matcher.find()) {
+                for (int i = 1; i < matcher.groupCount(); i++) {
+
+                    try {
+                        if (DEBUG) System.out.println("group " + i + ": " + matcher.group(i));
+                    }
+                    catch (NullPointerException bpe) {
+
+                    }
+
+                    if (i == 2) {
+                        aggregates = matcher.group(i);
+                    }
+
+                    if (i == 4) {
+                        table = matcher.group(i);
+                    }
+
+                    if (i == 7) {
+                        groupings = matcher.group(i);
+                    }
+
+                }
+
+            }
+
+            String[] groupingList = groupings.split(", ");
+            String[] aggregateList = aggregates.split(", ");
+            ArrayList<String> ag = new ArrayList<>();
+
+            for (String item : aggregateList) {
+                if (item.contains("avg") || item.contains("AVG")) {
+                    ag.add("avg");
+                    item = item.replace("avg", "").replace("AVG", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else if (item.contains("count") || item.contains("COUNT")) {
+                    ag.add("count");
+                    item = item.replace("count", "").replace("COUNT", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else if (item.contains("min") || item.contains("MIN")) {
+                    ag.add("min");
+                    item = item.replace("min", "").replace("MIN", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else if (item.contains("max") || item.contains("MAX")) {
+                    ag.add("max");
+                    item = item.replace("max", "").replace("MAX", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else if (item.contains("sum") || item.contains("SUM")) {
+                    ag.add("sum");
+                    item = item.replace("sum", "").replace("SUM", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else {
+                    params.add(item);
+                    ag.add(EMPTY);
+                }
+            }
+
+
+            //return manager.group(table, params, ag, EMPTY_ARRAY, groupingList[0], "String");
+        }
         else if(input.toUpperCase().contains("GROUP BY")){
 
-        }
-        else if(input.toUpperCase().contains("GROUPING SETS")){
+            if(DEBUG)
+                print("Entering GROUP BY");
 
+            String groupings = "";
+            String aggregates = "";
+            final String EMPTY = "";
+
+            Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) (.*)(.*)");
+            Matcher matcher = pattern.matcher(input.replace(";",""));
+
+            while (matcher.find()) {
+                for(int i = 1; i < matcher.groupCount(); i++) {
+
+                    try {
+                        if (DEBUG) System.out.println("group " + i + ": " + matcher.group(i));
+                    }
+                    catch (NullPointerException bpe){
+
+                    }
+
+                    if(i == 2){
+                        aggregates = matcher.group(i);
+                    }
+
+                    if(i == 4){
+                        table = matcher.group(i);
+                    }
+
+                    if(i == 7){
+                        groupings = matcher.group(i);
+                    }
+
+                }
+
+            }
+
+            String[] groupingList = groupings.split(", ");
+            String[] aggregateList = aggregates.split(", ");
+            ArrayList<String> ag = new ArrayList<>();
+
+            for(String item : aggregateList){
+                if(item.contains("avg") || item.contains("AVG")){
+                    ag.add("avg");
+                    item = item.replace("avg", "").replace("AVG","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else if(item.contains("count") || item.contains("COUNT")){
+                    ag.add("count");
+                    item = item.replace("count", "").replace("COUNT","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else if(item.contains("min") || item.contains("MIN")){
+                    ag.add("min");
+                    item = item.replace("min", "").replace("MIN","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else if(item.contains("max") || item.contains("MAX")){
+                    ag.add("max");
+                    item = item.replace("max", "").replace("MAX","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else if(item.contains("sum") || item.contains("SUM")){
+                    ag.add("sum");
+                    item = item.replace("sum", "").replace("SUM","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else{
+                    params.add(item);
+                    ag.add(EMPTY);
+                }
+            }
+
+
+            return manager.group(table, params, ag, EMPTY_ARRAY, groupingList[0], "String");
         }
         else if(input.toUpperCase().contains("ROLLUP")){
 

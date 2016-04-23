@@ -108,7 +108,8 @@ public class Project {
 
         System.out.println("Test #2");
 
-        //Relation r = manager.group("people", params, aggregate, conditions, "name", "String");
+        Relation r = manager.group("people", params, aggregate, EMPTY_LIST, "name", "String");
+        System.out.println(r);
 
         params.clear();
         conditions.clear();
