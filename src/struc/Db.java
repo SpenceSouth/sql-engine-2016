@@ -1,5 +1,6 @@
 package struc;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -35,21 +36,36 @@ public class Db {
         return tables.get(name);
     }
 
-    public boolean dropTable(String name){
+    public boolean dropTable(String database, String name){
 
-        return false;
+        String path = "databases/" + database + "/" + name + ".xml";
+
+        File file = new File(path);
+
+        if(!file.exists()){
+            return false;
+        }
+
+        file.delete();
+        return true;
     }
 
     public void insertColumn(String table, Col col){
         tables.get(table).insertColumn(col);
     }
 
-    public Relation select(String table, ArrayList<String> params, ArrayList<String> conditions){
-        return tables.get(table).select(params, conditions);
+    public Relation select(String table, ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
+
+        if(!tables.containsKey(table)){
+            System.out.println("Database does not contain table " + table);
+            return null;
+        }
+
+        return tables.get(table).select(params, conditions, sets);
     }
 
-    public Relation select(Relation table, ArrayList<String> params, ArrayList<String> conditions){
-        return table.select(params, conditions);
+    public Relation select(Relation table, ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
+        return table.select(params, conditions, sets);
     }
 
     public void update(String table, String param, String value, ArrayList<String> conditions){
@@ -68,17 +84,17 @@ public class Db {
         tables.get(table).insert(params, values);
     }
 
-    public void wUpdate(String table, String param, String value, ArrayList<String> conditions){
-        tables.get(table).wUpdate(param, value, conditions);
-    }
-
-    public void wSelect(String table, ArrayList<String> params, ArrayList<String> conditions){
-        tables.get(table).wSelect(params, conditions);
-    }
-
-    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
-        return tables.get(table).group(params, aggregates, conditions, groupBy, type);
-    }
+//    public void wUpdate(String table, String param, String value, ArrayList<String> conditions){
+//        tables.get(table).wUpdate(param, value, conditions);
+//    }
+//
+//    public void wSelect(String table, ArrayList<String> params, ArrayList<String> conditions){
+//        tables.get(table).wSelect(params, conditions);
+//    }
+//
+//    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
+//        return tables.get(table).group(params, aggregates, conditions, groupBy, type);
+//    }
 
     public String showTables(){
 

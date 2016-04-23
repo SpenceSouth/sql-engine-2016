@@ -38,13 +38,66 @@ public class DbManager {
 
     public boolean createDatabase(String name){
 
+        File theDir = new File("databases/" + name);
+
+        if (!theDir.exists()) {
+
+            try{
+                new File("databases/" + name).mkdirs();
+            }
+            catch(SecurityException se){
+                return false;
+            }
+            return true;
+        }
+
         return false;
     }
 
     public boolean dropDatabase(String name){
 
-        return false;
+        File folder = new File("databases/" + name);
+
+        if(!folder.exists()){
+            return false;
+        }
+
+        File[] files = folder.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
+        return true;
     }
+
+    private void deleteFolder(File folder){
+
+        File[] files = folder.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
+
+    }
+
+    public boolean dropTable(String name) {
+
+        return currentDatabase().dropTable(current, name);
+
+    }
+
 
     public int size(){
         return databases.size();
@@ -62,16 +115,22 @@ public class DbManager {
         return databases.get(current).getTable(table);
     }
 
-    public Relation select(String table, ArrayList<String> params, ArrayList<String> conditions) {
-        return select(current, table, params, conditions);
+    public Relation select(String table, ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets) {
+
+        if(current == null){
+            System.out.println("No database selected");
+            return null;
+        }
+
+        return select(current, table, params, conditions, sets);
     }
 
-    public Relation select(Relation table, ArrayList<String> params, ArrayList<String> conditions) {
-        return databases.get(current).select(table, params, conditions);
+    public Relation select(Relation table, ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets) {
+        return databases.get(current).select(table, params, conditions, sets);
     }
 
-    public Relation select(String database, String table, ArrayList<String> params, ArrayList<String> conditions){
-        return databases.get(database).select(table, params, conditions);
+    public Relation select(String database, String table, ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
+        return databases.get(database).select(table, params, conditions, sets);
     }
 
     public void update(String table, String param, String value, ArrayList<String> conditions){
@@ -106,23 +165,34 @@ public class DbManager {
         databases.get(database).getTable(table).insert(params, values);
     }
 
-    public void wUpdate(String table, String param, String value, ArrayList<String> conditions){
-        databases.get(current).getTable(table).wUpdate(param, value, conditions );
-    }
-
-    public void wSelect(String table, ArrayList<String> params, ArrayList<String> conditions){
-        databases.get(current).getTable(table).wSelect(params, conditions);
-    }
-
-    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
-        return databases.get(current).getTable(table).group(params, aggregates, conditions, groupBy, type);
-    }
+//    public void wUpdate(String table, String param, String value, ArrayList<String> conditions){
+//        databases.get(current).getTable(table).wUpdate(param, value, conditions );
+//    }
+//
+//    public void wSelect(String table, ArrayList<String> params, ArrayList<String> conditions){
+//        databases.get(current).getTable(table).wSelect(params, conditions);
+//    }
+//
+//    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
+//        return databases.get(current).getTable(table).group(params, aggregates, conditions, groupBy, type);
+//    }
 
     public boolean loadDatabase(String name){
+
+        if(databases.containsKey(name)){
+            current = name;
+            System.out.println("Database loaded");
+            System.out.println();
+            return false;
+        }
+
         databases.put(name, new Db(name));
         current = name;
         loadXML(name);
-        return false;
+        System.out.println("Database " + name + " loaded.");
+        System.out.println();
+
+        return true;
     }
 
     private void loadXML(String databaseName){
@@ -235,6 +305,10 @@ public class DbManager {
         //Database.database_name = Database.temp_database_name;
     }
 
+    public void saveDatabase(String name){
+        saveXML(name);
+    }
+
     private void saveXML(String databaseName){
 
     }
@@ -249,6 +323,20 @@ public class DbManager {
         Relation relation2 = databases.get(current).getTable(r2);
 
         return databases.get(current).join(relation1, relation2, field);
+    }
+
+    public String showDatabases(){
+        String dbs = "";
+
+        File file = new File("databases");
+        String[] names = file.list();
+
+        for(String name : names)
+        {
+            dbs += name + "\n";
+        }
+
+        return dbs;
     }
 
 }

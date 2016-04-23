@@ -1,9 +1,6 @@
 package struc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.locks.Condition;
 
 /**
@@ -161,7 +158,7 @@ public class Relation {
         return false;
     }
 
-    public Relation select(ArrayList<String> params, ArrayList<String> conditions){
+    public Relation select(ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
 
         Relation derivedRelation = new Relation();
 
@@ -169,19 +166,19 @@ public class Relation {
 
             // Get header data from columns
             for(Col column : columns){
-                System.out.print(column.getName() + "\t");
+                //System.out.print(column.getName() + "\t");
             }
 
-            System.out.println();
+            //System.out.println();
             int numOfRecords = columns.get(0).size();
 
             for(int i = 0; i < numOfRecords; i++){
                 for(Col column : columns){
 
-                    System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
+                    //System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
                 }
 
-                System.out.println();
+                //System.out.println();
             }
 
             // Clean columns then add them to new derived table
@@ -189,6 +186,11 @@ public class Relation {
                 Col c = new Col();
                 c.copyAttributes(col);
                 derivedRelation.insertColumn(c);
+            }
+
+            // Add records to new table columns
+            for(int i = 0; i < columns.get(0).size(); i++){
+                derivedRelation.insertRecordsIntoColumns(getRecordsByRowIndex(i));
             }
 
         }
@@ -200,10 +202,10 @@ public class Relation {
                 if(!contains(params, column.getName()))
                     continue;
 
-                System.out.print(column.getName() + "\t");
+                //System.out.print(column.getName() + "\t");
             }
 
-            System.out.println();
+            //System.out.println();
             int numOfRecords = columns.get(0).size();
 
             for(int i = 0; i < numOfRecords; i++){
@@ -213,13 +215,13 @@ public class Relation {
                         continue;
 
                     if(i == 1){
-                        derivedRelation.insertColumn(column);
+                        //derivedRelation.insertColumn(column);
                     }
 
-                    System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
+                    //System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
                 }
 
-                System.out.println();
+                //System.out.println();
             }
 
             // Clean columns then add them to new derived table
@@ -247,6 +249,7 @@ public class Relation {
                 derivedRelation.deleteColumnByName(name);
             }
 
+
         }
         else if(params.size() == 0 && conditions.size() > 0){
 
@@ -254,21 +257,38 @@ public class Relation {
             int numOfRecords = columns.get(0).size();
 
             // Find rows that do not meet the WHERE condition
+//            for (int i = 0; i < numOfRecords; i++) {
+//                for (Col column : columns) {
+//                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData())) {
+//                        recordsToRemove.add(i);
+//                    }
+//                }
+//            }
+
             for (int i = 0; i < numOfRecords; i++) {
+
+                HashMap<String, String> row = new HashMap<>();
+
+                //Data from column is stored with header information in hashmap that represents the row
                 for (Col column : columns) {
-                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData())) {
-                        recordsToRemove.add(i);
-                    }
+                    row.put(column.getName(), column.getRec(i).getLastEntry().getData());
                 }
+
+                if(!comparison(conditions, sets, row)){
+                    recordsToRemove.add(i);
+                }
+
+
             }
+
 
             // Get header data from columns
             for(Col column : columns){
 
-                System.out.print(column.getName() + "\t");
+                //System.out.print(column.getName() + "\t");
             }
 
-            System.out.println();
+            //System.out.println();
             boolean addedColumn = false;
 
             // Print out rows that do meet the WHERE conditions
@@ -280,14 +300,13 @@ public class Relation {
                         continue;
                     }
 
-                    System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
+                    //System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
                 }
 
-                System.out.println();
+                //System.out.println();
             }
 
             // Clean columns then add them to new derived table
-            ArrayList<Col> tempColumns = new ArrayList<>();
             for(Col col : columns){
                 Col c = new Col();
                 c.copyAttributes(col);
@@ -323,10 +342,10 @@ public class Relation {
                     if(!contains(params, column.getName()))
                         continue;
 
-                    System.out.print(column.getName() + "\t");
+                    //System.out.print(column.getName() + "\t");
                 }
 
-                System.out.println();
+                //System.out.println();
 
                 // Print out rows that do not meet the where condition
                 for(int i = 0; i < numOfRecords; i++){
@@ -340,14 +359,13 @@ public class Relation {
                             continue;
                         }
 
-                        System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
+                        //System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
                     }
 
-                    System.out.println();
+                    //System.out.println();
                 }
 
                 // Clean columns then add them to new derived table
-                ArrayList<Col> tempColumns = new ArrayList<>();
                 for(Col col : columns){
                     Col c = new Col();
                     c.copyAttributes(col);
@@ -396,10 +414,115 @@ public class Relation {
         }
     }
 
+    private boolean comparison(ArrayList<String> conditions, ArrayList<String> sets, HashMap<String, String> row){
+
+        if(conditions.size() == 0){
+            return true;
+        }
+        else if(conditions.size() == 1){
+            String[] split = conditions.get(0).split(" ");
+            String term = split[0];
+            String operator = split[1];
+            String requirement = split[2];
+
+            // See if this term column is even in the hash set
+            if(!row.containsKey(term)){
+                // TODO: Might need to make this return a default variable
+                return true;
+            }
+            else {
+                return compare(requirement, operator, row.get(term));
+            }
+
+        }
+        else if(conditions.size() > 1){
+
+            ArrayList<Boolean> truths = new ArrayList<>();
+
+            //Get truth value of each condition
+            for(int i = 0; i < conditions.size(); i++) {
+
+                String[] split = conditions.get(i).split(" ");
+                String term = split[0];
+                String operator = split[1];
+                String requirement = split[2];
+
+                // See if this term column is even in the hash set
+                if(!row.containsKey(term)){
+                    // TODO: Might need to make this return a default variable
+                    truths.add(true);
+                }
+                else {
+                    truths.add(compare(requirement, operator, row.get(term)));
+                }
+            }
+
+            // Push truths onto a stack
+            Stack<Boolean> stack = new Stack<>();
+            for(int i = truths.size()-1; i > -1; i--){
+                stack.push(truths.get(i));
+            }
+
+            // Break down stack until only one value is remaining
+            for(int i = sets.size()-1; i > -1; i--){
+
+                boolean truth1 = stack.pop();
+                boolean truth2 = stack.pop();
+
+                if(sets.get(i).equalsIgnoreCase("AND")){
+                    stack.push(truth1 && truth2);
+                }
+                else if(sets.get(i).equalsIgnoreCase("OR")){
+                    stack.push(truth1 || truth2);
+                }
+
+                if(stack.size() == 1){
+                    return stack.pop();
+                }
+
+            }
+
+
+        }
+
+        return false;
+    }
+
+    private boolean compare(String requirement, String operator, String value){
+
+        if (operator.equals("=")) {
+            return requirement.equals(value);
+        }
+        // Must be integers or numbers
+        else if (operator.equals(">")) {
+            int a = Integer.parseInt(value);
+            int b = Integer.parseInt(requirement);
+
+            return a > b;
+        }
+        else if (operator.equals("<")) {
+
+            int a = Integer.parseInt(value);
+            int b = Integer.parseInt(requirement);
+
+            return a < b;
+        }
+        else if (operator.equals("!=")) {
+            return !requirement.equals(value);
+        }
+        else {
+            System.out.println("Relation.comparison: Unexpected scenario occurred");
+            System.exit(2);
+        }
+
+        return true;
+    }
+
     private boolean predicate(ArrayList<String> conditions, String name, String value){
         return predicate(conditions, name, value, true);
     }
 
+    // TODO: Currently on works for AND
     private boolean predicate(ArrayList<String> conditions, String name, String value, boolean defaults){
 
         for(String condition : conditions){
@@ -455,349 +578,349 @@ public class Relation {
         return false;
     }
 
-    public void wUpdate(String param, String value, ArrayList<String> conditions){
-
-        ArrayList<Col> tempColumns = new ArrayList<>(columns);
-        HashSet<Integer> recordsToUpdate = new HashSet<>();
-        int numOfRecords = columns.get(0).size();
-
-        // Finds out which records need to be updated
-        for (int i = 0; i < numOfRecords; i++) {
-            for (Col column : tempColumns) {
-                if (predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData(), false)) {
-                    recordsToUpdate.add(i);
-                }
-            }
-        }
-
-        // Updates records
-        for(int i = 0; i < numOfRecords; i++){
-
-            for(Col column : tempColumns){
-
-                if(recordsToUpdate.contains(i) && column.getName().equals(param)) {
-
-                    // Update here
-                    column.getRec(i).addEntry(value);
-
-                }
-            }
-
-            System.out.println();
-        }
-    }
-
-    public boolean wSelect(ArrayList<String> params, ArrayList<String> conditions){
-
-        if(params.size() == 0 && conditions.size() == 0){
-
-            // Get header data from columns
-            for(Col column : columns){
-                System.out.print(column.getName() + "\t");
-            }
-
-            System.out.println();
-            int numOfRecords = columns.get(0).size();
-
-            for(int i = 0; i < numOfRecords; i++){
-                for(Col column : columns){
-
-                    ArrayList<Entry> entries = column.getRec(i).getAllEntries();
-
-                    for(Entry entry : entries){
-                        System.out.print(entry.getData() + "\t" + entry.getTimeStamp() + "\t");
-                    }
-                }
-
-                System.out.println();
-            }
-
-        }
-        else if(params.size() > 0 && conditions.size() == 0){
-
-            // Get header data from columns
-            for(Col column : columns){
-
-                if(!contains(params, column.getName()))
-                    continue;
-
-                System.out.print(column.getName() + "\t");
-            }
-
-            System.out.println();
-            int numOfRecords = columns.get(0).size();
-
-            for(int i = 0; i < numOfRecords; i++){
-                for(Col column : columns){
-
-                    if(!contains(params, column.getName()))
-                        continue;
-
-                    ArrayList<Entry> entries = column.getRec(i).getAllEntries();
-
-                    for(Entry entry : entries){
-                        System.out.print(entry.getData() + "\t" + entry.getTimeStamp() + "\t");
-                    }
-                }
-
-                System.out.println();
-            }
-
-        }
-        else if(params.size() == 0 && conditions.size() > 0){
-
-            ArrayList<Col> tempColumns = new ArrayList<>(columns);
-            HashSet<Integer> recordsToRemove = new HashSet<>();
-            int numOfRecords = columns.get(0).size();
-
-            for (int i = 0; i < numOfRecords; i++) {
-                for (Col column : tempColumns) {
-                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData())) {
-                        recordsToRemove.add(i);
-                    }
-                }
-            }
-
-            // Get header data from columns
-            for(Col column : tempColumns){
-
-                System.out.print(column.getName() + "\t");
-            }
-
-            System.out.println();
-
-            for(int i = 0; i < numOfRecords; i++){
-
-                for(Col column : tempColumns){
-
-                    if(recordsToRemove.contains(i)){
-                        continue;
-                    }
-
-                    System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
-                }
-
-                System.out.println();
-            }
-
-        }
-        else if(params.size() > 0 && conditions.size() > 0){
-
-            ArrayList<Col> tempColumns = new ArrayList<>(columns);
-            HashSet<Integer> recordsToRemove = new HashSet<>();
-            int numOfRecords = columns.get(0).size();
-
-            for (int i = 0; i < numOfRecords; i++) {
-                for (Col column : tempColumns) {
-                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData())) {
-                        recordsToRemove.add(i);
-                    }
-                }
-            }
-
-            // Get header data from columns
-            for(Col column : tempColumns){
-
-                if(!contains(params, column.getName()))
-                    continue;
-
-                System.out.print(column.getName() + "\t");
-            }
-
-            System.out.println();
-
-            for(int i = 0; i < numOfRecords; i++){
-
-                for(Col column : tempColumns){
-
-                    if(!contains(params, column.getName()))
-                        continue;
-
-                    if(recordsToRemove.contains(i)){
-                        continue;
-                    }
-
-                    System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
-                }
-
-                System.out.println();
-            }
-
-        }
-        else{
-            System.out.println("Unexpected scenario occurred");
-            System.exit(2);
-        }
-
-
-        return false;
-    }
-
-    /** Type is either a string or not a string.  Just because. */
-    public Relation group(ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
-
-        //Get distinct group values
-        HashSet<String> distinct = new HashSet<>();
-        HashMap<String, Relation> tables = new HashMap<>();
-
-        Col col = getColumnByName(groupBy);
-        for(Rec rec : col.getRecs()){
-            distinct.add(rec.getLastEntry().getData());
-        }
-
-        for(String d : distinct) {
-
-            ArrayList<String> p = new ArrayList<>();
-            ArrayList<String> c = new ArrayList<>();
-
-            c.add(groupBy + " = " + d);
-
-            Relation r = this.select(p, c);
-            tables.put(d, r);
-        }
-
-        // Get aggregates for each parameter as necessary
-        int newTableSize = tables.size();
-        Relation table = new Relation();
-
-        // Create columns for new table
-        for(int i = 0; i < params.size(); i++){
-            Col c = getColumnByName(params.get(i));
-
-            String name = params.get(i);
-
-            if(!aggregates.get(i).isEmpty()){
-                name += "-" + aggregates.get(i);
-            }
-
-            table.insertColumn(new Col(name, c.getType(), c.getMaxLength(), c.getDecimalsAllowed(), false));
-        }
-
-        for(String d : distinct){
-
-            Relation r = tables.get(d);
-            ArrayList<String> values = new ArrayList<>();
-
-            for(int i = 0; i < params.size(); i++){
-
-                if(aggregates.get(i).isEmpty()){
-                    values.add(r.getColumnByName(params.get(i)).getRec(i).getLastEntry().getData());
-                }
-                else{
-                    if(aggregates.get(i).equals("avg")){
-                        values.add(Double.toString(r.average(params.get(i))));
-                    }
-                    else if(aggregates.get(i).equals("count")){
-                        ArrayList<String> c = new ArrayList<>();
-                        c.add(groupBy + " = " + d);
-
-                        ArrayList<String> p = new ArrayList<>();
-                        p.add(params.get(i));
-
-                        values.add(Integer.toString(r.count(p, c)));
-                    }
-                    else if(aggregates.get(i).equals("sum")){
-                        ArrayList<String> c = new ArrayList<>();
-                        c.add(groupBy + " = " + d);
-
-                        ArrayList<String> p = new ArrayList<>();
-                        p.add(params.get(i));
-
-                        values.add(Double.toString(r.sum(p, c)));
-                    }
-                    else if(aggregates.get(i).equals("min")){
-                        ArrayList<String> c = new ArrayList<>();
-                        c.add(groupBy + " = " + d);
-
-                        ArrayList<String> p = new ArrayList<>();
-                        p.add(params.get(i));
-
-                        values.add(Double.toString(r.min(p, c)));
-                    }
-                    else if(aggregates.get(i).equals("max")){
-                        ArrayList<String> c = new ArrayList<>();
-                        c.add(groupBy + " = " + d);
-
-                        ArrayList<String> p = new ArrayList<>();
-                        p.add(params.get(i));
-
-                        values.add(Double.toString(r.max(p, c)));
-
-                    }
-                    else{
-                        System.out.println("Relation.group: Unexpected scenerio occurred");
-                        System.exit(2);
-                    }
-                }
-
-            }
-
-            table.insert(values);
-            values.clear();
-
-        }
-
-        return table;
-
-    }
-
-    private double max(ArrayList<String> params, ArrayList<String> conditions){
-
-        double result = Double.MIN_VALUE;
-        Relation r = select(params, conditions);
-
-        for(Rec rec : r.columns.get(0).getRecs()){
-            double value = Double.parseDouble(rec.getLastEntry().getData());
-
-            if(value > result){
-                result = value;
-            }
-
-        }
-
-        return result;
-    }
-
-    private double min(ArrayList<String> params, ArrayList<String> conditions){
-
-        double result = Double.MAX_VALUE;
-        Relation r = select(params, conditions);
-
-        for(Rec rec : r.columns.get(0).getRecs()){
-            double value = Double.parseDouble(rec.getLastEntry().getData());
-
-            if(value < result){
-                result = value;
-            }
-
-        }
-
-        return result;
-    }
-
-    private double sum(ArrayList<String> params, ArrayList<String> conditions){
-
-        double result = 0;
-        Relation r = select(params, conditions);
-
-        for(Rec rec : r.columns.get(0).getRecs()){
-            result += Double.parseDouble(rec.getLastEntry().getData());
-        }
-
-        return result;
-    }
-
-    private int count(ArrayList<String> params, ArrayList<String> conditions){
-
-        HashSet<String> distinctValues = new HashSet<>();
-        Relation r = select(params, conditions);
-
-        for(Rec rec : r.columns.get(0).getRecs()){
-            distinctValues.add(rec.getLastEntry().getData());
-        }
-
-        return distinctValues.size();
-    }
+//    public void wUpdate(String param, String value, ArrayList<String> conditions){
+//
+//        ArrayList<Col> tempColumns = new ArrayList<>(columns);
+//        HashSet<Integer> recordsToUpdate = new HashSet<>();
+//        int numOfRecords = columns.get(0).size();
+//
+//        // Finds out which records need to be updated
+//        for (int i = 0; i < numOfRecords; i++) {
+//            for (Col column : tempColumns) {
+//                if (predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData(), false)) {
+//                    recordsToUpdate.add(i);
+//                }
+//            }
+//        }
+//
+//        // Updates records
+//        for(int i = 0; i < numOfRecords; i++){
+//
+//            for(Col column : tempColumns){
+//
+//                if(recordsToUpdate.contains(i) && column.getName().equals(param)) {
+//
+//                    // Update here
+//                    column.getRec(i).addEntry(value);
+//
+//                }
+//            }
+//
+//            System.out.println();
+//        }
+//    }
+//
+//    public boolean wSelect(ArrayList<String> params, ArrayList<String> conditions){
+//
+//        if(params.size() == 0 && conditions.size() == 0){
+//
+//            // Get header data from columns
+//            for(Col column : columns){
+//                System.out.print(column.getName() + "\t");
+//            }
+//
+//            System.out.println();
+//            int numOfRecords = columns.get(0).size();
+//
+//            for(int i = 0; i < numOfRecords; i++){
+//                for(Col column : columns){
+//
+//                    ArrayList<Entry> entries = column.getRec(i).getAllEntries();
+//
+//                    for(Entry entry : entries){
+//                        System.out.print(entry.getData() + "\t" + entry.getTimeStamp() + "\t");
+//                    }
+//                }
+//
+//                System.out.println();
+//            }
+//
+//        }
+//        else if(params.size() > 0 && conditions.size() == 0){
+//
+//            // Get header data from columns
+//            for(Col column : columns){
+//
+//                if(!contains(params, column.getName()))
+//                    continue;
+//
+//                System.out.print(column.getName() + "\t");
+//            }
+//
+//            System.out.println();
+//            int numOfRecords = columns.get(0).size();
+//
+//            for(int i = 0; i < numOfRecords; i++){
+//                for(Col column : columns){
+//
+//                    if(!contains(params, column.getName()))
+//                        continue;
+//
+//                    ArrayList<Entry> entries = column.getRec(i).getAllEntries();
+//
+//                    for(Entry entry : entries){
+//                        System.out.print(entry.getData() + "\t" + entry.getTimeStamp() + "\t");
+//                    }
+//                }
+//
+//                System.out.println();
+//            }
+//
+//        }
+//        else if(params.size() == 0 && conditions.size() > 0){
+//
+//            ArrayList<Col> tempColumns = new ArrayList<>(columns);
+//            HashSet<Integer> recordsToRemove = new HashSet<>();
+//            int numOfRecords = columns.get(0).size();
+//
+//            for (int i = 0; i < numOfRecords; i++) {
+//                for (Col column : tempColumns) {
+//                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData())) {
+//                        recordsToRemove.add(i);
+//                    }
+//                }
+//            }
+//
+//            // Get header data from columns
+//            for(Col column : tempColumns){
+//
+//                System.out.print(column.getName() + "\t");
+//            }
+//
+//            System.out.println();
+//
+//            for(int i = 0; i < numOfRecords; i++){
+//
+//                for(Col column : tempColumns){
+//
+//                    if(recordsToRemove.contains(i)){
+//                        continue;
+//                    }
+//
+//                    System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
+//                }
+//
+//                System.out.println();
+//            }
+//
+//        }
+//        else if(params.size() > 0 && conditions.size() > 0){
+//
+//            ArrayList<Col> tempColumns = new ArrayList<>(columns);
+//            HashSet<Integer> recordsToRemove = new HashSet<>();
+//            int numOfRecords = columns.get(0).size();
+//
+//            for (int i = 0; i < numOfRecords; i++) {
+//                for (Col column : tempColumns) {
+//                    if (!predicate(conditions, column.getName(), column.getRec(i).getLastEntry().getData())) {
+//                        recordsToRemove.add(i);
+//                    }
+//                }
+//            }
+//
+//            // Get header data from columns
+//            for(Col column : tempColumns){
+//
+//                if(!contains(params, column.getName()))
+//                    continue;
+//
+//                System.out.print(column.getName() + "\t");
+//            }
+//
+//            System.out.println();
+//
+//            for(int i = 0; i < numOfRecords; i++){
+//
+//                for(Col column : tempColumns){
+//
+//                    if(!contains(params, column.getName()))
+//                        continue;
+//
+//                    if(recordsToRemove.contains(i)){
+//                        continue;
+//                    }
+//
+//                    System.out.print(column.getRec(i).getLastEntry().getData() + "\t");
+//                }
+//
+//                System.out.println();
+//            }
+//
+//        }
+//        else{
+//            System.out.println("Unexpected scenario occurred");
+//            System.exit(2);
+//        }
+//
+//
+//        return false;
+//    }
+//
+//    /** Type is either a string or not a string.  Just because. */
+//    public Relation group(ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
+//
+//        //Get distinct group values
+//        HashSet<String> distinct = new HashSet<>();
+//        HashMap<String, Relation> tables = new HashMap<>();
+//
+//        Col col = getColumnByName(groupBy);
+//        for(Rec rec : col.getRecs()){
+//            distinct.add(rec.getLastEntry().getData());
+//        }
+//
+//        for(String d : distinct) {
+//
+//            ArrayList<String> p = new ArrayList<>();
+//            ArrayList<String> c = new ArrayList<>();
+//
+//            c.add(groupBy + " = " + d);
+//
+//            Relation r = this.select(p, c);
+//            tables.put(d, r);
+//        }
+//
+//        // Get aggregates for each parameter as necessary
+//        int newTableSize = tables.size();
+//        Relation table = new Relation();
+//
+//        // Create columns for new table
+//        for(int i = 0; i < params.size(); i++){
+//            Col c = getColumnByName(params.get(i));
+//
+//            String name = params.get(i);
+//
+//            if(!aggregates.get(i).isEmpty()){
+//                name += "-" + aggregates.get(i);
+//            }
+//
+//            table.insertColumn(new Col(name, c.getType(), c.getMaxLength(), c.getDecimalsAllowed(), false));
+//        }
+//
+//        for(String d : distinct){
+//
+//            Relation r = tables.get(d);
+//            ArrayList<String> values = new ArrayList<>();
+//
+//            for(int i = 0; i < params.size(); i++){
+//
+//                if(aggregates.get(i).isEmpty()){
+//                    values.add(r.getColumnByName(params.get(i)).getRec(i).getLastEntry().getData());
+//                }
+//                else{
+//                    if(aggregates.get(i).equals("avg")){
+//                        values.add(Double.toString(r.average(params.get(i))));
+//                    }
+//                    else if(aggregates.get(i).equals("count")){
+//                        ArrayList<String> c = new ArrayList<>();
+//                        c.add(groupBy + " = " + d);
+//
+//                        ArrayList<String> p = new ArrayList<>();
+//                        p.add(params.get(i));
+//
+//                        values.add(Integer.toString(r.count(p, c)));
+//                    }
+//                    else if(aggregates.get(i).equals("sum")){
+//                        ArrayList<String> c = new ArrayList<>();
+//                        c.add(groupBy + " = " + d);
+//
+//                        ArrayList<String> p = new ArrayList<>();
+//                        p.add(params.get(i));
+//
+//                        values.add(Double.toString(r.sum(p, c)));
+//                    }
+//                    else if(aggregates.get(i).equals("min")){
+//                        ArrayList<String> c = new ArrayList<>();
+//                        c.add(groupBy + " = " + d);
+//
+//                        ArrayList<String> p = new ArrayList<>();
+//                        p.add(params.get(i));
+//
+//                        values.add(Double.toString(r.min(p, c)));
+//                    }
+//                    else if(aggregates.get(i).equals("max")){
+//                        ArrayList<String> c = new ArrayList<>();
+//                        c.add(groupBy + " = " + d);
+//
+//                        ArrayList<String> p = new ArrayList<>();
+//                        p.add(params.get(i));
+//
+//                        values.add(Double.toString(r.max(p, c)));
+//
+//                    }
+//                    else{
+//                        System.out.println("Relation.group: Unexpected scenerio occurred");
+//                        System.exit(2);
+//                    }
+//                }
+//
+//            }
+//
+//            table.insert(values);
+//            values.clear();
+//
+//        }
+//
+//        return table;
+//
+//    }
+
+//    private double max(ArrayList<String> params, ArrayList<String> conditions){
+//
+//        double result = Double.MIN_VALUE;
+//        Relation r = select(params, conditions);
+//
+//        for(Rec rec : r.columns.get(0).getRecs()){
+//            double value = Double.parseDouble(rec.getLastEntry().getData());
+//
+//            if(value > result){
+//                result = value;
+//            }
+//
+//        }
+//
+//        return result;
+//    }
+//
+//    private double min(ArrayList<String> params, ArrayList<String> conditions){
+//
+//        double result = Double.MAX_VALUE;
+//        Relation r = select(params, conditions);
+//
+//        for(Rec rec : r.columns.get(0).getRecs()){
+//            double value = Double.parseDouble(rec.getLastEntry().getData());
+//
+//            if(value < result){
+//                result = value;
+//            }
+//
+//        }
+//
+//        return result;
+//    }
+//
+//    private double sum(ArrayList<String> params, ArrayList<String> conditions){
+//
+//        double result = 0;
+//        Relation r = select(params, conditions);
+//
+//        for(Rec rec : r.columns.get(0).getRecs()){
+//            result += Double.parseDouble(rec.getLastEntry().getData());
+//        }
+//
+//        return result;
+//    }
+//
+//    private int count(ArrayList<String> params, ArrayList<String> conditions){
+//
+//        HashSet<String> distinctValues = new HashSet<>();
+//        Relation r = select(params, conditions);
+//
+//        for(Rec rec : r.columns.get(0).getRecs()){
+//            distinctValues.add(rec.getLastEntry().getData());
+//        }
+//
+//        return distinctValues.size();
+//    }
 
     private double average(String field){
         ArrayList<Double> toBeAveraged = new ArrayList<>();
@@ -845,7 +968,8 @@ public class Relation {
 
 
     //Display Functions
-    public void displayTable(ArrayList<String> headers,ArrayList<String[]> records){
+    private String displayTable(ArrayList<String> headers,ArrayList<String[]> records){
+
       //Validation of Structure passed in 
       //Checks that each element has the same number of fields and finds each fields max size which
       //must be less than or equal to 25 else it will default to 25
@@ -887,12 +1011,38 @@ public class Relation {
         }
         output += divider;
       }
-      System.out.println(output);
+      return output;
     }
 
     /** NAGA: Table needs to be displayed on to string call */
     @Override
     public String toString(){
-        return super.toString();
+
+        ArrayList<String> headers = new ArrayList<>();
+        ArrayList<String[]> records = new ArrayList<>();
+
+        for(Col col : columns){
+            headers.add(col.getName());
+        }
+
+        if(getRecordSize() < 1){
+            return headers.toString();
+        }
+
+        for(int i = 0; i < getRecordSize(); i++){
+
+            ArrayList<Rec> recs = getRecordsByRowIndex(i);
+            String[] r = new String[recs.size()];
+
+            for(int j = 0; j < recs.size(); j++){
+                r[j] = recs.get(j).getLastEntry().getData();
+            }
+
+            records.add(r);
+
+        }
+
+        return displayTable(headers, records);
+
     }
 }

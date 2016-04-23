@@ -83,10 +83,11 @@ public class Project {
         ArrayList<String> aggregate = new ArrayList<>();
         ArrayList<String> conditions = new ArrayList<>();
 
-        conditions.add("name = 'Mark'");
+        conditions.add("age > 21");
+        conditions.add("age < 30");
 
         System.out.println("Test #1");
-        manager.select("people", params, conditions);
+        //manager.select("people", params, conditions);
 
         ArrayList<String> values = new ArrayList<>();
 
@@ -107,20 +108,20 @@ public class Project {
 
         System.out.println("Test #2");
 
-        Relation r = manager.group("people", params, aggregate, conditions, "name", "String");
+        //Relation r = manager.group("people", params, aggregate, conditions, "name", "String");
 
         params.clear();
         conditions.clear();
 
-        manager.select(r, params, conditions);
+        //manager.select(r, params, conditions);
 
-        manager.select("people", EMPTY_LIST, EMPTY_LIST);
+        //manager.select("people", EMPTY_LIST, EMPTY_LIST);
 
 
-        Relation r1 = manager.select("birthday", EMPTY_LIST, EMPTY_LIST);
-        Relation joinedTable = manager.join("people", "birthday", "age");
-
-        joinedTable.select(EMPTY_LIST, EMPTY_LIST);
+//        Relation r1 = manager.select("birthday", EMPTY_LIST, EMPTY_LIST);
+//        Relation joinedTable = manager.join("people", "birthday", "age");
+//
+//        joinedTable.select(EMPTY_LIST, EMPTY_LIST);
 
         /*params.add("name");
         conditions.add("age > 30");
