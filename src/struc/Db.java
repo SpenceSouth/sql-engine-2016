@@ -26,6 +26,10 @@ public class Db {
         return name;
     }
 
+    public void addDerivedTable(Relation r){
+        joinedTables.put(r.getName(), r);
+    }
+
     public Relation createTable(String name){
         Relation table = new Relation(name);
         tables.put(name, table);

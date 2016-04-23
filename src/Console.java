@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -53,10 +53,10 @@ public class Console {
         switch (first.toUpperCase()){
 
             case "SELECT":
-                select(input);
+                print(select(input).toString());
                 break;
             case "WSELECT":
-                select(input);
+                print(select(input).toString());
                 break;
             case "INSERT":
                 insert(input);
@@ -104,14 +104,74 @@ public class Console {
 
     }
 
-    private void select(String input){
+    private Relation select(String input){
         String table = "";
         ArrayList<String> params = new ArrayList<>();
         ArrayList<String> conditions = new ArrayList<>();
         ArrayList<String> sets = new ArrayList<>();
+        boolean isEmbedded = false;
+
+        // Check for embedded statement
+        Pattern p = Pattern.compile(".* (FROM|from) \\((.*)\\)(.*)");
+        Matcher m = p.matcher(input.replace(";",""));
+
+        try {
+
+            while(m.find()) {
+                for (int i = 0; i < m.groupCount(); i++) {
+                    if (DEBUG) System.out.println("TryGroup " + i + ": " + m.group(i));
+
+                    if (i == 2) {
+                        isEmbedded = true;
+                    }
+                }
+            }
+        }
+        catch (IllegalStateException ise){
+            isEmbedded = false;
+        }
 
         if(!input.toUpperCase().contains("FROM")){
             print("Syntax Error: Missing FROM keyword.");
+        }
+        else if(isEmbedded){
+
+            if(DEBUG)
+                print("ENTERING Embedded");
+
+            String embedded = "";
+
+            Pattern pattern = Pattern.compile(".* (FROM|from) \\((.*)\\)(.*)");
+            Matcher matcher = pattern.matcher(input.replace(";",""));
+
+            while(matcher.find()) {
+                for (int i = 0; i < matcher.groupCount(); i++) {
+                    if(DEBUG) System.out.println("Group " + i + ": " + matcher.group(i));
+
+                    if(i == 2){
+                        embedded = matcher.group(i);
+                    }
+                }
+            }
+
+            Relation r = select(embedded);
+            String name = r.getName();
+            name = name + 0;
+            r.setName(name);
+            manager.addDerivedTable(r);
+
+            String inputWithoutEmbedded = "";
+
+            // Remove embedded clause from input
+            inputWithoutEmbedded = input.replaceAll(embedded.trim(), "");
+            inputWithoutEmbedded = inputWithoutEmbedded.replaceAll("\\(" + embedded + "\\)", r.getName()).trim();
+            inputWithoutEmbedded = inputWithoutEmbedded.replaceAll("\\(\\)", r.getName().trim());
+
+            if(DEBUG)
+                print("New input: " + inputWithoutEmbedded);
+
+
+            return select(inputWithoutEmbedded);
         }
         else if(input.toUpperCase().contains("JOIN")){
             String inputWithoutJoin = "";
@@ -165,7 +225,7 @@ public class Console {
                 print("New input: " + inputWithoutJoin);
 
 
-            select(inputWithoutJoin);
+            return select(inputWithoutJoin);
         }
         else if(input.toUpperCase().contains("GROUP BY")){
 
@@ -241,10 +301,12 @@ public class Console {
                 }
 
                 Relation r = manager.select(table, params, conditions, sets);
-                System.out.println(r);
+                return r;
 
             }
         }
+
+        return null;
 
     }
 

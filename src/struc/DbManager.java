@@ -321,6 +321,10 @@ public class DbManager {
         return databases.get(current).join(relation1, relation2, field);
     }
 
+    public void addDerivedTable(Relation r){
+        databases.get(current).addDerivedTable(r);
+    }
+
     public String showDatabases(){
         String dbs = "";
 
