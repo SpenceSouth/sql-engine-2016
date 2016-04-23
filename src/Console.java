@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +16,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -249,7 +251,7 @@ public class Console {
             final String EMPTY = "";
 
             Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) " +
-                    "(GROUPING|grouping) (SETS|sets) (.*)(.*)");
+                    "(GROUPING|grouping) (SETS|sets) \\((.*)(.*)\\)");
             Matcher matcher = pattern.matcher(input.replace(";", ""));
 
             while (matcher.find()) {
@@ -270,7 +272,7 @@ public class Console {
                         table = matcher.group(i);
                     }
 
-                    if (i == 7) {
+                    if (i == 9) {
                         groupings = matcher.group(i);
                     }
 
@@ -314,8 +316,74 @@ public class Console {
                 }
             }
 
+            HashMap<String, String> queries = new HashMap<>();
 
-            //return manager.group(table, params, ag, EMPTY_ARRAY, groupingList[0], "String");
+            ArrayList<String> groupList = new ArrayList<>();
+            ArrayList<String> rawAgList = new ArrayList<String>(Arrays.asList(aggregateList));
+
+            // Clear parens out of groupList
+            for(String item : groupingList){
+                groupList.add(item.substring(1, item.length() - 1));
+            }
+
+            // Break up into separate queries to be ran and then combined
+            for(int i = 0; i < groupList.size(); i++){
+
+                String item = groupList.get(i);
+                String query = "SELECT ";
+
+                for(String param : rawAgList){
+                    if(param.equals(item)){
+                        query += param;
+
+                        // Special formatting for the last param added
+                        if(rawAgList.indexOf(param) != rawAgList.size()-1){
+                            query += ", ";
+                        }
+                        else{
+                            query += " ";
+                        }
+
+                    }
+                    else if(!param.equals(item) && Relation.contains(groupList, param)){
+
+                    }
+                    else{
+                        query += param;
+
+                        // Special formatting for the last param added
+                        if(rawAgList.indexOf(param) != rawAgList.size()-1){
+                            query += ", ";
+                        }
+                        else{
+                            query += " ";
+                        }
+                    }
+                }
+
+                query += "FROM " + table + " GROUP BY " + item;
+                queries.put(item, query);
+
+            }
+
+            ArrayList<Relation> relations = new ArrayList<>();
+
+            for(String key : queries.keySet()){
+
+                relations.add(select(queries.get(key)));
+
+            }
+
+            // Add all the relations until only two are left
+            while(relations.size() > 2){
+                Relation r1 = relations.remove(0);
+                Relation r2 = relations.remove(1);
+
+                Relation r = manager.add(r1, r2);
+                relations.add(0, r);
+            }
+
+            return manager.add(relations.get(0), relations.get(1));
         }
         else if(input.toUpperCase().contains("GROUP BY")){
 

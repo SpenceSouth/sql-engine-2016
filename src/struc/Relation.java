@@ -610,7 +610,7 @@ public class Relation {
         return defaults;
     }
 
-    private boolean contains(ArrayList<String> list, String term){
+    public static boolean contains(ArrayList<String> list, String term){
         for(String str : list){
             if (str.equals(term)){
                 return true;
