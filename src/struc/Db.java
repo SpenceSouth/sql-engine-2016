@@ -33,6 +33,11 @@ public class Db {
     }
 
     public Relation getTable(String name){
+
+        if(joinedTables.containsKey(name)){
+            return joinedTables.get(name);
+        }
+
         return tables.get(name);
     }
 
@@ -55,6 +60,10 @@ public class Db {
     }
 
     public Relation select(String table, ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
+
+        if(joinedTables.containsKey(table)){
+            return select(joinedTables.get(table), params, conditions, sets);
+        }
 
         if(!tables.containsKey(table)){
             System.out.println("Database does not contain table " + table);
@@ -115,6 +124,7 @@ public class Db {
     public Relation join(Relation r1, Relation r2, String joinField){
 
         Relation derivedRelation = new Relation();
+        derivedRelation.setName(r1.getName() + "j" + r2.getName());
         Col joinCol1 = new Col();
         Col joinCol2 = new Col();
 
@@ -171,6 +181,7 @@ public class Db {
         // Delete the duplicated joined row from the derived relation
         derivedRelation.deleteColumnByName(joinField);
 
+        joinedTables.put(derivedRelation.getName(), derivedRelation);
 
         return derivedRelation;
     }

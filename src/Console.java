@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -114,7 +114,58 @@ public class Console {
             print("Syntax Error: Missing FROM keyword.");
         }
         else if(input.toUpperCase().contains("JOIN")){
+            String inputWithoutJoin = "";
 
+            if(DEBUG)
+                print("ENTERING JOIN");
+
+            Pattern pattern = Pattern.compile(".* (JOIN|join) (\\w+) (ON|on) (\\w+\\.\\w+) (=) (\\w+\\.\\w+)(.*)");
+            Matcher matcher = pattern.matcher(input.replace(";",""));
+
+            // Error out if minimal conditions are not met
+            if(matcher.groupCount() != 7){
+                print("Syntax error in JOIN");
+            }
+
+            String table1 = "";
+            String table2 = "";
+            String field = "";
+            String capture = "";
+
+            while(matcher.find()){
+                for(int i = 0; i < matcher.groupCount(); i++){
+                    if(DEBUG) System.out.println("Group " + i + ": " + matcher.group(i));
+
+                    if(i != 0){
+                        capture += matcher.group(i) + " ";
+                    }
+
+                    if(i == 4){
+                        table1 = matcher.group(i).split("\\.")[0];
+                        field = matcher.group(i).split("\\.")[1];
+                    }
+
+                    if(i == 6){
+                        table2 = matcher.group(i).split("\\.")[0];
+                        if(!field.equals(matcher.group(i).split("\\.")[1])){
+                            print("ERROR non matching join columns");
+                        }
+                    }
+
+                }
+            }
+
+            Relation join = manager.join(table1, table2, field);
+
+            // Remove JOIN clause from input
+            inputWithoutJoin = input.replaceAll(capture.trim(), "");
+            inputWithoutJoin = inputWithoutJoin.replaceAll(table1, join.getName()).trim();
+
+            if(DEBUG)
+                print("New input: " + inputWithoutJoin);
+
+
+            select(inputWithoutJoin);
         }
         else if(input.toUpperCase().contains("GROUP BY")){
 
