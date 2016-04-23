@@ -68,12 +68,12 @@ public class Db {
         return table.select(params, conditions, sets);
     }
 
-    public void update(String table, String param, String value, ArrayList<String> conditions){
-        tables.get(table).update(param, value, conditions);
+    public void update(String table, String param, String value, ArrayList<String> conditions, ArrayList<String> sets){
+        tables.get(table).update(param, value, conditions, sets);
     }
 
-    public void delete(String table, ArrayList<String> conditions){
-        tables.get(table).delete(conditions);
+    public void delete(String table, ArrayList<String> conditions, ArrayList<String> sets){
+        tables.get(table).delete(conditions, sets);
     }
 
     public void insert(String table, ArrayList<String> values){

@@ -133,20 +133,20 @@ public class DbManager {
         return databases.get(database).select(table, params, conditions, sets);
     }
 
-    public void update(String table, String param, String value, ArrayList<String> conditions){
-        update(current, table, param, value, conditions);
+    public void update(String table, String param, String value, ArrayList<String> conditions, ArrayList<String> sets){
+        update(current, table, param, value, conditions, sets);
     }
 
-    public void update(String database, String table, String param, String value, ArrayList<String> conditions){
-        databases.get(database).update(table, param, value, conditions);
+    public void update(String database, String table, String param, String value, ArrayList<String> conditions, ArrayList<String> sets){
+        databases.get(database).update(table, param, value, conditions, sets);
     }
 
-    public void delete(String database, String table, ArrayList<String> conditions){
-        databases.get(database).getTable(table).delete(conditions);
+    public void delete(String database, String table, ArrayList<String> conditions, ArrayList<String> sets){
+        databases.get(database).getTable(table).delete(conditions, sets);
     }
 
-    public void delete(String table, ArrayList<String> conditions){
-        databases.get(current).getTable(table).delete(conditions);
+    public void delete(String table, ArrayList<String> conditions, ArrayList<String> sets){
+        databases.get(current).getTable(table).delete(conditions, sets);
     }
 
     public void insert(String table, ArrayList<String> values){
@@ -165,17 +165,13 @@ public class DbManager {
         databases.get(database).getTable(table).insert(params, values);
     }
 
-//    public void wUpdate(String table, String param, String value, ArrayList<String> conditions){
-//        databases.get(current).getTable(table).wUpdate(param, value, conditions );
-//    }
-//
-//    public void wSelect(String table, ArrayList<String> params, ArrayList<String> conditions){
-//        databases.get(current).getTable(table).wSelect(params, conditions);
-//    }
-//
-//    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
-//        return databases.get(current).getTable(table).group(params, aggregates, conditions, groupBy, type);
-//    }
+    public void wUpdate(String table, String param, String value, ArrayList<String> conditions, ArrayList<String> sets){
+        databases.get(current).getTable(table).wUpdate(param, value, conditions, sets);
+    }
+
+    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
+        return databases.get(current).getTable(table).group(params, aggregates, conditions, groupBy, type);
+    }
 
     public boolean loadDatabase(String name){
 
