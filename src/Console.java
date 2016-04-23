@@ -56,7 +56,7 @@ public class Console {
                 print(select(input).toString());
                 break;
             case "WSELECT":
-                print(select(input).toString());
+                print(select(input).toStringWSelect());
                 break;
             case "INSERT":
                 insert(input);
