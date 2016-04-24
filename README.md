@@ -6,12 +6,12 @@
 - Create <-Ish
 
 ## Data structure Implementation
-- SelectW <- Naga
+- SelectW 
 - Roll Up <- Spence
 - Cube
 
 ## Outputting
-- SelectW
+- SelectW <- Naga
 
 ## Purpose
 
