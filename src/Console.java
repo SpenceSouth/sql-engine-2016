@@ -243,6 +243,76 @@ public class Console {
         }
         else if(input.toUpperCase().contains("ROLLUP")){
 
+            if (DEBUG)
+                print("Entering ROLLUP");
+
+            String groupings = "";
+            String aggregates = "";
+            final String EMPTY = "";
+
+            Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) " +
+                    "(ROLLUP|rollup) \\((.*)(.*)\\)");
+            Matcher matcher = pattern.matcher(input.replace(";", ""));
+
+            while (matcher.find()) {
+                for (int i = 1; i < matcher.groupCount(); i++) {
+
+                    try {
+                        if (DEBUG) System.out.println("group " + i + ": " + matcher.group(i));
+                    }
+                    catch (NullPointerException bpe) {
+
+                    }
+
+                    if (i == 2) {
+                        aggregates = matcher.group(i);
+                    }
+
+                    if (i == 4) {
+                        table = matcher.group(i);
+                    }
+
+                    if (i == 8) {
+                        groupings = matcher.group(i);
+                    }
+
+                }
+
+            }
+
+            String[] groupingList = groupings.split(", ");
+            ArrayList<String> groupList = new ArrayList<>();
+
+            // Clear parens out of groupList
+            for(String item : groupingList){
+                if(item.length() > 2)
+                    groupList.add(item.substring(1, item.length() - 1));
+                else
+                    groupList.add(item);
+            }
+
+            String group = "";
+
+            while(groupList.size() > 0){
+
+                group += "(";
+
+                for(int i = 0; i < groupList.size(); i++){
+                    group += groupList.get(i) + ",";
+                }
+
+                group = group.substring(0, group.length()-1);
+                group += "), ";
+                groupList.remove(groupList.size()-1);
+
+            }
+
+            group += "()";
+
+            String formattedQuery = String.format("SELECT %s FROM %s GROUP BY GROUPING SETS (%s)", aggregates, table, group);
+
+            return select(formattedQuery);
+
         }
         else if(input.toUpperCase().contains("CUBE")){
 
@@ -364,56 +434,6 @@ public class Console {
                 if(DEBUG) System.out.println(queries.get(group));
             }
 
-            // Break up into separate queries to be ran and then combined
-/*
-            for(int i = 0; i < groupList.size(); i++){
-
-                String item = groupList.get(i);
-                String query = "SELECT ";
-
-                for(String param : rawAgList){
-                    if(param.equals(item)){
-                        query += param;
-
-                        // Special formatting for the last param added
-                        if(rawAgList.indexOf(param) != rawAgList.size()-1){
-                            query += ", ";
-                        }
-                        else{
-                            query += " ";
-                        }
-
-                    }
-                    else if(!param.equals(item) && Relation.contains(groupList, param)){
-
-                    }
-                    else{
-                        query += param;
-
-                        // Special formatting for the last param added
-                        if(rawAgList.indexOf(param) != rawAgList.size()-1){
-                            query += ", ";
-                        }
-                        else{
-                            query += " ";
-                        }
-                    }
-                }
-
-                // Only items in the params should be in the group by item
-                String[] split = item.split(",");
-                String group = "()";
-                for(int x = 0; x < split.length; x++){
-                    if(rawAgList.contains(split[x])){
-                        group = split[x];
-                    }
-                }
-
-                query += "FROM " + table + " GROUP BY " + group;
-                queries.put(item, query);
-
-            }
-*/
 
             ArrayList<Relation> relations = new ArrayList<>();
 
