@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -241,10 +241,16 @@ public class Console {
 
             return select(inputWithoutJoin);
         }
+        else if(input.toUpperCase().contains("ROLLUP")){
+
+        }
+        else if(input.toUpperCase().contains("CUBE")){
+
+        }
         else if(input.toUpperCase().contains("GROUP BY GROUPING SETS")) {
 
             if (DEBUG)
-                print("Entering GROUP BY");
+                print("Entering GROUPING SETS");
 
             String groupings = "";
             String aggregates = "";
@@ -326,7 +332,37 @@ public class Console {
                 groupList.add(item.substring(1, item.length() - 1));
             }
 
+            String formattedQuery = "SELECT %s FROM %s GROUP BY %s";
+
+            for(int i = 0; i < groupList.size(); i++){
+
+                String projection = "";
+                String group = group = groupList.get(i);
+
+                for(int j = 0; j < rawAgList.size(); j++){
+
+                    String[] groupSplit = group.split(",");
+
+                    if(Relation.contains(new ArrayList<String>(Arrays.asList(groupSplit)), rawAgList.get(j))){
+                        projection += rawAgList.get(j) + ", ";
+                    }
+                    else if(rawAgList.get(j).contains("(")){
+                        projection += rawAgList.get(j) + ", ";
+                    }
+                    else{
+                        if(DEBUG) System.out.println("Discarding parameter " + rawAgList.get(j));
+                    }
+
+                }
+
+                projection = projection.substring(0, projection.length()-2);
+
+                queries.put(group, String.format(formattedQuery, projection, table, group));
+                if(DEBUG) System.out.println(queries.get(group));
+            }
+
             // Break up into separate queries to be ran and then combined
+/*
             for(int i = 0; i < groupList.size(); i++){
 
                 String item = groupList.get(i);
@@ -361,10 +397,20 @@ public class Console {
                     }
                 }
 
-                query += "FROM " + table + " GROUP BY " + item;
+                // Only items in the params should be in the group by item
+                String[] split = item.split(",");
+                String group = "()";
+                for(int x = 0; x < split.length; x++){
+                    if(rawAgList.contains(split[x])){
+                        group = split[x];
+                    }
+                }
+
+                query += "FROM " + table + " GROUP BY " + group;
                 queries.put(item, query);
 
             }
+*/
 
             ArrayList<Relation> relations = new ArrayList<>();
 
@@ -423,7 +469,7 @@ public class Console {
 
             }
 
-            String[] groupingList = groupings.split(", ");
+            String[] groupingList = groupings.split(", |,");
             String[] aggregateList = aggregates.split(", ");
             ArrayList<String> ag = new ArrayList<>();
 
@@ -467,12 +513,6 @@ public class Console {
             if(DEBUG) System.out.println(table);
 
             return manager.group(table, params, ag, new ArrayList<String>(Arrays.asList(groupingList)));
-        }
-        else if(input.toUpperCase().contains("ROLLUP")){
-
-        }
-        else if(input.toUpperCase().contains("CUBE")){
-
         }
         // Basic SELECT statement when no special operations are included.  May or may not include a WHERE clause
         else{
