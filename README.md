@@ -1,3 +1,18 @@
+#TO DO LIST
+## Parser
+- Insert
+- Update
+- Delete
+- Create <-Ish
+
+## Data structure Implementation
+- SelectW <- Naga
+- Roll Up <- Spence
+- Cube
+
+## Outputting
+- SelectW
+
 ## Purpose
 
 The purpose of this project is to modify code that was inherited from a previous semester of Data Modeling to fix their bugs and add data warehouse functionality.
