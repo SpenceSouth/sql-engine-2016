@@ -667,8 +667,88 @@ public class Relation {
         }
     }
 
-    /** Type is either a string or not a string.  Just because. */
     public Relation group(ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> groupBy){
+
+        // Get aggregates for each parameter as necessary
+        Relation table = new Relation();
+
+        // Create columns for new table
+        for(int i = 0; i < params.size(); i++){
+            Col c = getColumnByName(params.get(i));
+
+            String name = params.get(i);
+
+            if(!aggregates.get(i).isEmpty()){
+                name += "-" + aggregates.get(i);
+            }
+
+            table.insertColumn(new Col(name, c.getType(), c.getMaxLength(), c.getDecimalsAllowed(), false));
+        }
+
+        if(groupBy.size() == 1 && groupBy.get(0).charAt(0) == '('){
+
+            Relation r = select(params, EMPTY_LIST, EMPTY_LIST);
+            ArrayList<String> values = new ArrayList<>();
+
+            for(int i = 0; i < params.size(); i++){
+
+                if(aggregates.get(i).isEmpty()){
+                    values.add(r.getColumnByName(params.get(i)).getRec(0).getLastEntry().getData());
+                }
+                else{
+                    if(aggregates.get(i).equals("avg")){
+                        values.add(Double.toString(r.average(params.get(i))));
+                    }
+                    else if(aggregates.get(i).equals("count")){
+                        ArrayList<String> c = new ArrayList<>();
+                        ArrayList<String> a = new ArrayList<>();
+
+                        ArrayList<String> p = new ArrayList<>();
+                        p.add(params.get(i));
+
+                        values.add(Integer.toString(r.count(p, c, a)));
+                    }
+                    else if(aggregates.get(i).equals("sum")){
+                        ArrayList<String> c = new ArrayList<>();
+                        ArrayList<String> a = new ArrayList<>();
+
+                        ArrayList<String> p = new ArrayList<>();
+                        p.add(params.get(i));
+
+                        values.add(Double.toString(r.sum(p, c, a)));
+                    }
+                    else if(aggregates.get(i).equals("min")){
+                        ArrayList<String> c = new ArrayList<>();
+                        ArrayList<String> a = new ArrayList<>();
+
+                        ArrayList<String> p = new ArrayList<>();
+                        p.add(params.get(i));
+
+                        values.add(Double.toString(r.min(p, c, a)));
+                    }
+                    else if(aggregates.get(i).equals("max")){
+                        ArrayList<String> c = new ArrayList<>();
+                        ArrayList<String> a = new ArrayList<>();
+
+                        ArrayList<String> p = new ArrayList<>();
+                        p.add(params.get(i));
+
+                        values.add(Double.toString(r.max(p, c, a)));
+
+                    }
+                    else{
+                        System.out.println("Relation.group: Unexpected scenerio occurred");
+                        System.exit(2);
+                    }
+                }
+
+            }
+
+            table.insert(values);
+            values.clear();
+
+            return table;
+        }
 
         //Get distinct group values
         HashSet<String> distinct = new HashSet<>();
@@ -716,23 +796,6 @@ public class Relation {
 
             Relation r = this.select(p, c, a);
             tables.put(d, r);
-        }
-
-        // Get aggregates for each parameter as necessary
-        int newTableSize = tables.size();
-        Relation table = new Relation();
-
-        // Create columns for new table
-        for(int i = 0; i < params.size(); i++){
-            Col c = getColumnByName(params.get(i));
-
-            String name = params.get(i);
-
-            if(!aggregates.get(i).isEmpty()){
-                name += "-" + aggregates.get(i);
-            }
-
-            table.insertColumn(new Col(name, c.getType(), c.getMaxLength(), c.getDecimalsAllowed(), false));
         }
 
         for(String d : distinct){
