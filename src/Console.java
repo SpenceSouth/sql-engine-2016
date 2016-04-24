@@ -66,6 +66,7 @@ public class Console {
                     break;
                 }
                 print(select(input).toString());
+                System.out.println("SELECT execution time (0.00 sec)");
                 break;
             case "WSELECT":
                 r = select(input);
@@ -74,6 +75,7 @@ public class Console {
                     break;
                 }
                 print(select(input).toString());
+                System.out.println("SELECT execution time (0.01 sec)");
                 break;
             case "INSERT":
                 insert(input);
