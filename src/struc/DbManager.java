@@ -169,8 +169,8 @@ public class DbManager {
         databases.get(current).getTable(table).wUpdate(param, value, conditions, sets);
     }
 
-    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
-        return databases.get(current).getTable(table).group(params, aggregates, conditions, groupBy, type);
+    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> groupBy){
+        return databases.get(current).getTable(table).group(params, aggregates, groupBy);
     }
 
     public boolean loadDatabase(String name){

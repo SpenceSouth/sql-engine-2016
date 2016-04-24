@@ -565,6 +565,7 @@ public class Relation {
     }
 
     // TODO: Currently on works for AND
+    @Deprecated
     private boolean predicate(ArrayList<String> conditions, String name, String value, boolean defaults){
 
         for(String condition : conditions){
@@ -667,25 +668,53 @@ public class Relation {
     }
 
     /** Type is either a string or not a string.  Just because. */
-    public Relation group(ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
+    public Relation group(ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> groupBy){
 
         //Get distinct group values
         HashSet<String> distinct = new HashSet<>();
         HashMap<String, Relation> tables = new HashMap<>();
+        Relation temp = new Relation();
 
-        Col col = getColumnByName(groupBy);
+        ArrayList<Col> columns = new ArrayList<>();
+        for(String group : groupBy){
+            columns.add(getColumnByName(group));
+            temp.insertColumn(getColumnByName(group));
+        }
+
+        for(int i = 0; i < columns.get(0).size(); i++){
+            ArrayList<Rec> rec = temp.getRecordsByRowIndex(i);
+            String groups = "";
+
+            for(Rec value : rec){
+                groups += value.getLastEntry().getData() + ",";
+            }
+
+            groups = groups.substring(0, groups.length()-1);
+
+            distinct.add(groups);
+        }
+
+        /*Col col = getColumnByName(groupBy);
         for(Rec rec : col.getRecs()){
             distinct.add(rec.getLastEntry().getData());
-        }
+        }*/
 
         for(String d : distinct) {
 
             ArrayList<String> p = new ArrayList<>();
             ArrayList<String> c = new ArrayList<>();
+            ArrayList<String> a = new ArrayList<>();
 
-            c.add(groupBy + " = " + d);
+            String[] split = d.split(",");
+            for(int i = 0; i < split.length; i++) {
+                c.add(groupBy.get(i) + " = " + split[i]);
+            }
 
-            Relation r = this.select(p, c, EMPTY_LIST);
+            for(int i = 1; i < split.length; i++){
+                a.add("AND");
+            }
+
+            Relation r = this.select(p, c, a);
             tables.put(d, r);
         }
 
@@ -714,7 +743,7 @@ public class Relation {
             for(int i = 0; i < params.size(); i++){
 
                 if(aggregates.get(i).isEmpty()){
-                    values.add(r.getColumnByName(params.get(i)).getRec(i).getLastEntry().getData());
+                    values.add(r.getColumnByName(params.get(i)).getRec(0).getLastEntry().getData());
                 }
                 else{
                     if(aggregates.get(i).equals("avg")){
@@ -722,39 +751,75 @@ public class Relation {
                     }
                     else if(aggregates.get(i).equals("count")){
                         ArrayList<String> c = new ArrayList<>();
-                        c.add(groupBy + " = " + d);
+                        ArrayList<String> a = new ArrayList<>();
+
+                        String[] split = d.split(",");
+                        for(int j = 0; j < split.length; j++) {
+                            c.add(groupBy.get(j) + " = " + split[j]);
+                        }
+
+                        for(int j = 1; j < split.length; j++){
+                            a.add("AND");
+                        }
 
                         ArrayList<String> p = new ArrayList<>();
                         p.add(params.get(i));
 
-                        values.add(Integer.toString(r.count(p, c)));
+                        values.add(Integer.toString(r.count(p, c, a)));
                     }
                     else if(aggregates.get(i).equals("sum")){
                         ArrayList<String> c = new ArrayList<>();
-                        c.add(groupBy + " = " + d);
+                        ArrayList<String> a = new ArrayList<>();
+
+                        String[] split = d.split(",");
+                        for(int j = 0; j < split.length; j++) {
+                            c.add(groupBy.get(j) + " = " + split[j]);
+                        }
+
+                        for(int j = 1; j < split.length; j++){
+                            a.add("AND");
+                        }
 
                         ArrayList<String> p = new ArrayList<>();
                         p.add(params.get(i));
 
-                        values.add(Double.toString(r.sum(p, c)));
+                        values.add(Double.toString(r.sum(p, c, a)));
                     }
                     else if(aggregates.get(i).equals("min")){
                         ArrayList<String> c = new ArrayList<>();
-                        c.add(groupBy + " = " + d);
+                        ArrayList<String> a = new ArrayList<>();
+
+                        String[] split = d.split(",");
+                        for(int j = 0; j < split.length; j++) {
+                            c.add(groupBy.get(j) + " = " + split[j]);
+                        }
+
+                        for(int j = 1; j < split.length; j++){
+                            a.add("AND");
+                        }
 
                         ArrayList<String> p = new ArrayList<>();
                         p.add(params.get(i));
 
-                        values.add(Double.toString(r.min(p, c)));
+                        values.add(Double.toString(r.min(p, c, a)));
                     }
                     else if(aggregates.get(i).equals("max")){
                         ArrayList<String> c = new ArrayList<>();
-                        c.add(groupBy + " = " + d);
+                        ArrayList<String> a = new ArrayList<>();
+
+                        String[] split = d.split(",");
+                        for(int j = 0; j < split.length; j++) {
+                            c.add(groupBy.get(j) + " = " + split[j]);
+                        }
+
+                        for(int j = 1; j < split.length; j++){
+                            a.add("AND");
+                        }
 
                         ArrayList<String> p = new ArrayList<>();
                         p.add(params.get(i));
 
-                        values.add(Double.toString(r.max(p, c)));
+                        values.add(Double.toString(r.max(p, c, a)));
 
                     }
                     else{
@@ -774,10 +839,10 @@ public class Relation {
 
     }
 
-    private double max(ArrayList<String> params, ArrayList<String> conditions){
+    private double max(ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
 
         double result = Double.MIN_VALUE;
-        Relation r = select(params, conditions, EMPTY_LIST);
+        Relation r = select(params, conditions, sets);
 
         for(Rec rec : r.columns.get(0).getRecs()){
             double value = Double.parseDouble(rec.getLastEntry().getData());
@@ -791,10 +856,10 @@ public class Relation {
         return result;
     }
 
-    private double min(ArrayList<String> params, ArrayList<String> conditions){
+    private double min(ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
 
         double result = Double.MAX_VALUE;
-        Relation r = select(params, conditions, EMPTY_LIST);
+        Relation r = select(params, conditions, sets);
 
         for(Rec rec : r.columns.get(0).getRecs()){
             double value = Double.parseDouble(rec.getLastEntry().getData());
@@ -808,10 +873,10 @@ public class Relation {
         return result;
     }
 
-    private double sum(ArrayList<String> params, ArrayList<String> conditions){
+    private double sum(ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
 
         double result = 0;
-        Relation r = select(params, conditions, EMPTY_LIST);
+        Relation r = select(params, conditions, sets);
 
         for(Rec rec : r.columns.get(0).getRecs()){
             result += Double.parseDouble(rec.getLastEntry().getData());
@@ -820,10 +885,10 @@ public class Relation {
         return result;
     }
 
-    private int count(ArrayList<String> params, ArrayList<String> conditions){
+    private int count(ArrayList<String> params, ArrayList<String> conditions, ArrayList<String> sets){
 
         HashSet<String> distinctValues = new HashSet<>();
-        Relation r = select(params, conditions, EMPTY_LIST);
+        Relation r = select(params, conditions, sets);
 
         for(Rec rec : r.columns.get(0).getRecs()){
             distinctValues.add(rec.getLastEntry().getData());

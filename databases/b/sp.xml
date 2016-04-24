@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<sp table_Column_Count="3" table_Record_Count="4">
+  <s is_null_allowed="false" restriction="5" restriction_2="0" type="VARCHAR">
+    <Record0>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S1'</data>
+    </Record0>
+    <Record1>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S1'</data>
+    </Record1>
+    <Record2>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S2'</data>
+    </Record2>
+    <Record3>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S2'</data>
+    </Record3>
+    <Record4>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S3'</data>
+    </Record4>
+    <Record5>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'S4'</data>
+    </Record5>
+  </s>
+  <p is_null_allowed="false" restriction="3" restriction_2="0" type="VARCHAR">
+    <Record0>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P1'</data>
+    </Record0>
+    <Record1>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P2'</data>
+    </Record1>
+    <Record2>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P1'</data>
+    </Record2>
+    <Record3>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P2'</data>
+    </Record3>
+    <Record4>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P2'</data>
+    </Record4>
+    <Record5>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P2'</data>
+    </Record5>
+  </p>
+  <qty is_null_allowed="true" restriction="1" restriction_2="0" type="INT">
+    <Record0>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">300</data>
+    </Record0>
+    <Record1>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">200</data>
+    </Record1>
+    <Record2>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">300</data>
+    </Record2>
+    <Record3>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">400</data>
+    </Record3>
+    <Record4>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">200</data>
+    </Record4>
+    <Record5>
+      <data timestamp="Wed Apr 06 14:20:49 EDT 2016">200</data>
+    </Record5>
+  </qty>
+</sp>

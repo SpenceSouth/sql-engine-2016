@@ -466,7 +466,7 @@ public class Console {
 
             if(DEBUG) System.out.println(table);
 
-            return manager.group(table, params, ag, EMPTY_ARRAY, groupingList[0], "String");
+            return manager.group(table, params, ag, new ArrayList<String>(Arrays.asList(groupingList)));
         }
         else if(input.toUpperCase().contains("ROLLUP")){
 
