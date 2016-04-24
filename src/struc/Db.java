@@ -197,6 +197,11 @@ public class Db {
         return tables.size();
     }
 
+    public boolean TableExist (String tableName)
+    {
+        return tables.containsKey(tableName);
+    }
+
 
 
 }
