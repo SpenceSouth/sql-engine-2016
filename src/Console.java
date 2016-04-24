@@ -112,7 +112,7 @@ public class Console {
                 System.out.println("Available commands: SELECT, WSELECT, INSERT, UPDATE, WUPDATE, DELETE, CREATE, DROP, " +
                         "SHOW, LIST, LOAD, USE, SAVE, COMMIT");
                 break;
-            case "EXIT":
+            case "QUIT":
             case "EXIT;":
                 System.out.println("EXITING....");
                 break;
