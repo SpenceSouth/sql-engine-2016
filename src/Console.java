@@ -316,6 +316,77 @@ public class Console {
         }
         else if(input.toUpperCase().contains("CUBE")){
 
+            if (DEBUG)
+                print("Entering CUBE");
+
+            String groupings = "";
+            String aggregates = "";
+            final String EMPTY = "";
+
+            Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) " +
+                    "(CUBE|cube) \\((.*)(.*)\\)");
+            Matcher matcher = pattern.matcher(input.replace(";", ""));
+
+            while (matcher.find()) {
+                for (int i = 1; i < matcher.groupCount(); i++) {
+
+                    try {
+                        if (DEBUG) System.out.println("group " + i + ": " + matcher.group(i));
+                    }
+                    catch (NullPointerException bpe) {
+
+                    }
+
+                    if (i == 2) {
+                        aggregates = matcher.group(i);
+                    }
+
+                    if (i == 4) {
+                        table = matcher.group(i);
+                    }
+
+                    if (i == 8) {
+                        groupings = matcher.group(i);
+                    }
+
+                }
+
+            }
+
+            String[] groupingList = groupings.split(", ");
+            ArrayList<String> groupList = new ArrayList<>();
+
+            // Clear parens out of groupList
+            for(String item : groupingList){
+                if(item.length() > 2)
+                    groupList.add(item.substring(1, item.length() - 1));
+                else
+                    groupList.add(item);
+            }
+
+            String group = "(";
+
+            for(int i = 0; i < groupList.size(); i++){
+                group += groupList.get(i) + ",";
+            }
+            group = group.substring(0, group.length()-1);
+
+            group += "), ";
+
+            for(int i = 0; i < groupList.size(); i++){
+                group += "(" + groupList.get(i) + "), ";
+            }
+
+            group = group.substring(0, group.length()-2);
+            group += ", ";
+
+
+            group += "()";
+
+            String formattedQuery = String.format("SELECT %s FROM %s GROUP BY GROUPING SETS (%s)", aggregates, table, group);
+
+            return select(formattedQuery);
+
         }
         else if(input.toUpperCase().contains("GROUP BY GROUPING SETS")) {
 
