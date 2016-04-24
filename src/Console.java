@@ -1,3 +1,4 @@
+import struc.Col;
 import struc.DbManager;
 import struc.Relation;
 
@@ -6,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -712,13 +714,125 @@ public class Console {
             }
 
         }
-        else if(level.equalsIgnoreCase("table")){
-            print("CREATE TABLE not supported yet");
+        else if(level.equalsIgnoreCase("table"))
+        {
+            input = input.replace(";","");
+            Pattern pattern = Pattern.compile("(?i)(create table) (\\w+)\\s*(\\()\\s*(.*)(\\))");
+            Matcher matcher = pattern.matcher(input);
+
+            String tableName = null;
+            ArrayList<Col> colTempList = new ArrayList<>();
+            while(matcher.find())
+            {
+                for(int i = 0; i < matcher.groupCount(); i++)
+                {
+
+                    if(i == 1)
+                    {
+                        tableName = matcher.group(2);
+                        if (DEBUG) System.out.println(matcher.group(2));
+                    }
+                    if (i==3)
+                    {
+                        if (DEBUG)
+                         System.out.println(matcher.group(4));
+                        String columns = matcher.group(4);
+                        String[] listColumns = columns.split(",");
+                        List<String> wordList = Arrays.asList(listColumns);
+
+                        String colName = null;
+                        String typeName = null;
+                        String nullable = null;
+                        for (String e : wordList)
+                        {
+                            e = e.trim();
+                            String[] splited = e.split("\\s+");
+
+                            if (splited.length == 2)
+                            {
+                                colName = splited[0];
+                                typeName = splited[1];
+                                nullable = "null";
+                            }
+
+                            else if(splited.length == 3)
+                            {
+                                colName = splited[0];
+                                typeName = splited[1];
+                                nullable = splited[2];
+                            }
+                            else if(splited.length == 4)
+                            {
+                                colName = splited[0];
+                                typeName = splited[1];
+                                nullable = splited[2] +" " +splited[3];
+                            }
+                            else
+                            {
+                                System.out.println("Error: Please check field declarations or commas");
+                                return;
+                            }
+
+                            //make sure nothing is null before creating table or semantically checking on anything!
+                            if(tableName.equals(null) || colName.equals(null)
+                                    || typeName.equals(null) || nullable.equals(null))
+                            {
+                                System.out.println("Error: Null Value");
+                                return;
+                            }
+
+                            if (typeName.equalsIgnoreCase("date(mm/dd/yyyy)"))
+                            {
+                                typeName = "date";
+                            }
+
+                            //semantics check for null
+                            if (nullable.equalsIgnoreCase("null"))
+                            {
+                                nullable = "true";
+                            }
+                            else if (nullable.equalsIgnoreCase("not null"))
+                            {
+                                nullable = "false";
+                            }
+                            else
+                            {
+                                System.out.println("Error: Invalid character when declaring NULL or NOT NULL: "+ nullable);
+                                return;
+                            }
+
+                            //semantics check for type
+                            if (!(typeName.equalsIgnoreCase("character")||
+                                    typeName.equalsIgnoreCase("integer")||
+                                    typeName.equalsIgnoreCase("number")||
+                                    typeName.equalsIgnoreCase("date")))
+                            {
+                                System.out.println("Error: Incorrect type: "+typeName);
+                                return;
+                            }
+
+                            boolean isNull;
+                            if (nullable.equalsIgnoreCase("true"))
+                            {
+                                isNull = true;
+                            }
+                            else
+                            {
+                                isNull = false;
+                            }
+
+                            Col column = new Col (colName, typeName, 0, 0, isNull);
+                            colTempList.add(column);
+                        }
+                    }
+                }
+            }
+            manager.currentDatabase().createTable(tableName, colTempList);
         }
-        else{
+        else
+        {
             print("Expected DATABASE or TABLE.  Instead found " + level + ".");
         }
-
     }
 
     private void drop(String input){

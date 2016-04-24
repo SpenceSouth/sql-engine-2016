@@ -36,6 +36,12 @@ public class Db {
         return table;
     }
 
+    public void createTable(String name, ArrayList<Col> colList){
+        Relation table = new Relation(name, colList);
+        tables.put(name, table);
+        //return table;
+    }
+
     public Relation getTable(String name){
 
         if(joinedTables.containsKey(name)){
