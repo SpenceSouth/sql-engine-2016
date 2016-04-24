@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import struc.DbManager;
+import struc.Relation;
 
 //Group A1
 //COP 4710 - Data Modeling
