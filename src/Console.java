@@ -91,10 +91,10 @@ public class Console {
                 insert(input);
                 break;
             case "UPDATE":
-                update(input);
+                update(input, false);
                 break;
             case "WUPDATE":
-                update(input);
+                update(input, true);
                 break;
             case "DELETE":
                 delete(input);
@@ -780,7 +780,7 @@ public class Console {
         }
     }
 
-    private void update(String input){
+    private void update(String input, boolean datawarehouse){
 
         if(DEBUG)
             print("ENTERING UPDATE");
@@ -846,7 +846,10 @@ public class Console {
             String value = setSplt[1];
 
 
-            manager.update(table, param.trim(), value.trim(), conditions, sets);
+            if(!datawarehouse)
+                manager.update(table, param.trim(), value.trim(), conditions, sets);
+            else
+                manager.wUpdate(table, param.trim(), value.trim(), conditions, sets);
         }
 
     }
