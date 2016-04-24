@@ -1,3 +1,4 @@
+import struc.Col;
 import struc.DbManager;
 import struc.Relation;
 
