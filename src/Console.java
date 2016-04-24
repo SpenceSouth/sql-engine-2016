@@ -790,7 +790,12 @@ public class Console {
         ArrayList<String> conditions = new ArrayList<>();
         ArrayList<String> sets = new ArrayList<>();
 
-        Pattern pattern = Pattern.compile("(?i)UPDATE (\\w+) SET (.*) WHERE (.*)(.*)");
+        String command = "UPDATE";
+
+        if(datawarehouse)
+            command = "WUPDATE";
+
+        Pattern pattern = Pattern.compile("(?i)" + command + " (\\w+) SET (.*) WHERE (.*)(.*)");
         Matcher matcher = pattern.matcher(input.replace(";",""));
 
         String table = "";
