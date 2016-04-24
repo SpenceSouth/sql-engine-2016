@@ -7,8 +7,6 @@
 
 ## Data structure Implementation
 - SelectW
-- Roll Up <- Spence
-- Cube <- Spence
 - Save & Load Debugging <-Ish
 
 ## Outputting
