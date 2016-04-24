@@ -626,7 +626,7 @@ public class Console {
                 print("Entering SELECT");
 
             Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+)" +
-                    "( (WHERE|where) (\\w* (=|>|<|!=) (\"\\w+\"|\\d+))( (((AND|and)|(OR|or)) (\\w* (=|>|<|!=) (\"\\w+\"|\\d+))))*)?");
+                    "( (WHERE|where) (\\w* (=|>|<|!=) (\'\\w+\'|\\d+))( (((AND|and)|(OR|or)) (\\w* (=|>|<|!=) (\'\\w+\'|\\d+))))*)?");
             Matcher matcher = pattern.matcher(input.replace(";",""));
             while (matcher.find()) {
                 for(int i = 1; i < matcher.groupCount(); i++) {
