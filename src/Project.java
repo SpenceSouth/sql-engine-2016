@@ -20,7 +20,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import struc.DbManager;
-import struc.Relation;
 
 //Group A1
 //COP 4710 - Data Modeling
@@ -1769,7 +1768,7 @@ public class Project {
     }
 
     // create tokens
-    public static void create_tokens(String temp) {
+    public static ArrayList<Project> create_tokens(String temp) {
         // reset
         tokens.clear();
         quotes = false;
@@ -1902,7 +1901,7 @@ public class Project {
                 }
             }
         }
-
+      return tokens;
     }
 
     // checks if string is a keyword

@@ -21,6 +21,8 @@ public class Relation {
         this.name = name;
     }
 
+    public Relation(String name, ArrayList<Col> colList) {this.name = name; this.columns = colList;}
+
     public void setName(String name){
         this.name = name;
     }
@@ -33,7 +35,8 @@ public class Relation {
         columns.add(record);
     }
 
-    public void insertRecordsIntoColumns(ArrayList<Rec> records){
+    public void insertRecordsIntoColumns(ArrayList<Rec> records)
+    {
         for(int i = 0; i < this.columns.size(); i++){
            this.columns.get(i).addRec(records.get(i));
         }
