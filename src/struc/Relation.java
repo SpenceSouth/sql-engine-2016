@@ -121,8 +121,6 @@ public class Relation {
 
                 }
             }
-
-            System.out.println();
         }
     }
 
@@ -1126,5 +1124,18 @@ public class Relation {
         }
 
         return displayTable(headers, records);
+    }
+
+    public boolean colExist (String colName)
+    {
+        for (Col value: columns)
+        {
+            String name = value.getName();
+            if (name.equals(colName))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

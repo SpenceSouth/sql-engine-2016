@@ -1,11 +1,13 @@
 import struc.Col;
 import struc.Db;
 import struc.DbManager;
+import struc.Rec;
 import struc.Relation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +21,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -29,8 +31,16 @@ public class Console {
 
         boolean stop = false;
 
-        while(!stop) {
-            stop = console.accept();
+        try {
+            while (!stop) {
+                stop = console.accept();
+            }
+        }
+        catch (Exception ex){
+            if(DEBUG)
+                ex.printStackTrace();
+            else
+                System.out.println("Unspecified syntax error occurred");
         }
     }
 
@@ -112,7 +122,7 @@ public class Console {
                 System.out.println("Available commands: SELECT, WSELECT, INSERT, UPDATE, WUPDATE, DELETE, CREATE, DROP, " +
                         "SHOW, LIST, LOAD, USE, SAVE, COMMIT");
                 break;
-            case "EXIT":
+            case "QUIT":
             case "EXIT;":
                 System.out.println("EXITING....");
                 break;
@@ -625,7 +635,7 @@ public class Console {
                 print("Entering SELECT");
 
             Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+)" +
-                    "( (WHERE|where) (\\w* (=|>|<|!=) (\"\\w+\"|\\d+))( (((AND|and)|(OR|or)) (\\w* (=|>|<|!=) (\"\\w+\"|\\d+))))*)?");
+                    "( (WHERE|where) (\\w* (=|>|<|!=) (\'\\w+\'|\\d+))( (((AND|and)|(OR|or)) (\\w* (=|>|<|!=) (\'\\w+\'|\\d+))))*)?");
             Matcher matcher = pattern.matcher(input.replace(";",""));
             while (matcher.find()) {
                 for(int i = 1; i < matcher.groupCount(); i++) {
@@ -689,15 +699,213 @@ public class Console {
 
     }
 
-    private void insert(String input){
+    private void insert(String input)
+    {
+        input = input.replace(";","");
+        Pattern pattern = Pattern.compile("(?i)(insert into) (\\w+)\\s*(\\()\\s*(.*)(\\))\\s*(values)\\s*(\\()\\s*(.*)(\\))");
+        Matcher matcher = pattern.matcher(input);
 
+        String tableName = null;
+        int sizeFields = 0;
+        int sizeRecords = 0;
+        ArrayList<Col> listCol = new ArrayList<>();
+        Relation table=null;
+        ArrayList<Rec> tempArrayListRecs = new ArrayList<>();
+        while(matcher.find())
+        {
+            for(int i = 0; i < matcher.groupCount(); i++)
+            {
+                if(i == 1)
+                {
+                    tableName = matcher.group(2);
+                    boolean tableExist = manager.currentDatabase().TableExist(tableName);
+                    if(!tableExist) {
+                        System.out.println(tableName + " doesn't exist, please create the table and try again");
+                        return;
+                    }
+
+                    if (DEBUG)
+                        System.out.println(matcher.group(2));
+                }
+
+                if(i == 3)
+                {
+                    String fieldNameDump = matcher.group(4);
+                    String[] listColumns = fieldNameDump.split(",");
+                    sizeFields = listColumns.length;
+                    List<String> wordList = Arrays.asList(listColumns);
+                    for (String columnString : wordList)
+                    {
+                        columnString = columnString.trim();
+                        table = manager.currentDatabase().getTable(tableName);
+                        boolean checkIfColExist = table.colExist(columnString);
+
+                        if(!checkIfColExist)
+                        {
+                            System.out.println(columnString+" doesn't exist");
+                            return;
+                        }
+                        listCol.add(table.getColumnByName(columnString));
+                    }
+                    if (DEBUG)
+                    System.out.println(matcher.group(4));
+                }
+
+                if (i==4)
+                {
+                    String recordDump = matcher.group(8);
+                    String[] listRecs = recordDump.split(",");
+                    sizeRecords = listRecs.length;
+                    List<String> wordList = Arrays.asList(listRecs);
+
+                    //check to that the number of columns listed
+                    //matches the number of values
+                    if (sizeFields != sizeRecords)
+                    {
+                        System.out.println("Error: Number of Columns: "+sizeFields+" Number of Values: "+sizeRecords);
+                        return;
+                    }
+
+                    for (String e : wordList)
+                    {
+                        e = e.trim();
+                        tempArrayListRecs.add(new Rec(e));
+                    }
+
+                    if (DEBUG)
+                    System.out.println(recordDump);
+                }
+            }
+            table.insertRecordsIntoColumns(tempArrayListRecs);
+        }
     }
 
     private void update(String input){
 
+        if(DEBUG)
+            print("ENTERING UPDATE");
+
+
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
+        ArrayList<String> sets = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("(?i)UPDATE (\\w+) SET (.*) WHERE (.*)(.*)");
+        Matcher matcher = pattern.matcher(input.replace(";",""));
+
+        String table = "";
+        String set = "";
+        String condition = "";
+
+        while(matcher.find()){
+            for(int i = 0; i < matcher.groupCount(); i++){
+                if(DEBUG) System.out.println("Group " + i + ": " + matcher.group(i));
+
+                if(i == 1){
+                    table = matcher.group(i);
+                }
+
+                if(i == 2){
+                    set = matcher.group(i);
+                }
+
+                if(i == 3){
+
+                    if(matcher.group(i) == null){
+                        continue;
+                    }
+
+                    String[] split = matcher.group(i).split(" ");
+
+                    // Starts at 1 because of the leading space in the WHERE clause
+                    for(int j = 0; j < split.length; j+=4){
+                        conditions.add(split[j].replace("\"","'").trim() + " " + split[j+1].trim() + " " + split[j+2].replace("\"","'").trim());
+
+                        try{
+                            sets.add(split[j+3].trim());
+                        }
+                        catch(Exception ex){
+
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+        String[] split = set.split(",|, ");
+        for(String s : split){
+            params.add(s);
+        }
+
+        for(String p : params) {
+
+            String[] setSplt = p.split(" = |=");
+            String param = setSplt[0];
+            String value = setSplt[1];
+
+
+            manager.update(table, param.trim(), value.trim(), conditions, sets);
+        }
+
     }
 
     private void delete(String input){
+
+        if(DEBUG)
+            print("ENTERING DELETE");
+
+
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
+        ArrayList<String> sets = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("(?i)DELETE FROM (\\w+)( WHERE (.*)(.*))?");
+        Matcher matcher = pattern.matcher(input.replace(";",""));
+
+        String table = "";
+        String condition = "";
+
+        while(matcher.find()){
+            for(int i = 0; i < matcher.groupCount(); i++){
+                if(DEBUG) System.out.println("Group " + i + ": " + matcher.group(i));
+
+                if(i == 1){
+                    table = matcher.group(i);
+                }
+
+                if(i == 3){
+
+                    if(matcher.group(i) == null){
+                        continue;
+                    }
+
+                    String[] split = matcher.group(i).split(" ");
+
+                    // Starts at 1 because of the leading space in the WHERE clause
+                    for(int j = 0; j < split.length; j+=4){
+                        conditions.add(split[j].replace("\"","'").trim() + " " + split[j+1].trim() + " " + split[j+2].replace("\"","'").trim());
+
+                        try{
+                            sets.add(split[j+3].trim());
+                        }
+                        catch(Exception ex){
+
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+        if(conditions.size() == 0){
+            manager.delete(table, conditions, sets);
+        }
+        else{
+            manager.delete(table, conditions, sets);
+        }
 
     }
 
@@ -793,7 +1001,7 @@ public class Console {
 
                             if (containTableInDB)
                             {
-                                print("TABLE " + " already exists."); // edited here MARKER!!
+                                print("TABLE " + " already exists.");
                                 return;
                             }
                             if (typeName.equalsIgnoreCase("date(mm/dd/yyyy)"))
