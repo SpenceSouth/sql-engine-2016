@@ -18,6 +18,10 @@ public class Db {
 
     }
 
+    public HashMap<String, Relation> getTablesHash()
+    {
+        return tables;
+    }
     public Db(String name){
         this.name = name;
     }

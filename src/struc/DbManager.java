@@ -169,8 +169,8 @@ public class DbManager {
         databases.get(current).getTable(table).wUpdate(param, value, conditions, sets);
     }
 
-    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> conditions, String groupBy, String type){
-        return databases.get(current).getTable(table).group(params, aggregates, conditions, groupBy, type);
+    public Relation group(String table, ArrayList<String> params, ArrayList<String> aggregates, ArrayList<String> groupBy){
+        return databases.get(current).getTable(table).group(params, aggregates, groupBy);
     }
 
     public boolean loadDatabase(String name){
@@ -380,30 +380,46 @@ public class DbManager {
         // Compare rows in tables to add
         for(int i = 0; i < r1.getRecordSize(); i++){
             ArrayList<Rec> recs = r1.getRecordsByRowIndex(i);
+            ArrayList<Rec> newRecs = new ArrayList<>();
 
             for(int j = 0; j < relationHeaders.size(); j++){
-                if(!r1Headers.contains(relationHeaders.get(j))){
-                    Rec rec = new Rec();
-                    rec.addEntry("null");
-                    recs.add(j, rec);
+
+                for(int k = 0; k < r1Headers.size(); k++){
+
+                    if(!r1Headers.contains(relationHeaders.get(j))){
+                        Rec rec = new Rec();
+                        rec.addEntry("null");
+                        newRecs.add(rec);
+                    }
+                    else if(r1Headers.get(k).equals(relationHeaders.get(j))){
+                        newRecs.add(recs.get(k));
+                    }
                 }
             }
 
-            relation.insertRecordsIntoColumns(recs);
+            relation.insertRecordsIntoColumns(newRecs);
         }
 
         for(int i = 0; i < r2.getRecordSize(); i++){
             ArrayList<Rec> recs = r2.getRecordsByRowIndex(i);
+            ArrayList<Rec> newRecs = new ArrayList<>();
 
             for(int j = 0; j < relationHeaders.size(); j++){
-                if(!r2Headers.contains(relationHeaders.get(j))){
-                    Rec rec = new Rec();
-                    rec.addEntry("null");
-                    recs.add(j, rec);
+
+                for(int k = 0; k < r2Headers.size(); k++){
+
+                    if(!r2Headers.contains(relationHeaders.get(j))){
+                        Rec rec = new Rec();
+                        rec.addEntry("null");
+                        newRecs.add(rec);
+                    }
+                    else if(r2Headers.get(k).equals(relationHeaders.get(j))){
+                        newRecs.add(recs.get(k));
+                    }
                 }
             }
 
-            relation.insertRecordsIntoColumns(recs);
+            relation.insertRecordsIntoColumns(newRecs);
         }
 
 

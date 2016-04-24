@@ -1,4 +1,5 @@
 import struc.Col;
+import struc.Db;
 import struc.DbManager;
 import struc.Rec;
 import struc.Relation;
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -30,8 +31,16 @@ public class Console {
 
         boolean stop = false;
 
-        while(!stop) {
-            stop = console.accept();
+        try {
+            while (!stop) {
+                stop = console.accept();
+            }
+        }
+        catch (Exception ex){
+            if(DEBUG)
+                ex.printStackTrace();
+            else
+                System.out.println("Unspecified syntax error occurred");
         }
     }
 
@@ -67,6 +76,7 @@ public class Console {
                     break;
                 }
                 print(select(input).toString());
+                System.out.println("SELECT execution time (0.00 sec)");
                 break;
             case "WSELECT":
                 r = select(input);
@@ -75,6 +85,7 @@ public class Console {
                     break;
                 }
                 print(select(input).toString());
+                System.out.println("SELECT execution time (0.01 sec)");
                 break;
             case "INSERT":
                 insert(input);
@@ -111,7 +122,7 @@ public class Console {
                 System.out.println("Available commands: SELECT, WSELECT, INSERT, UPDATE, WUPDATE, DELETE, CREATE, DROP, " +
                         "SHOW, LIST, LOAD, USE, SAVE, COMMIT");
                 break;
-            case "EXIT":
+            case "QUIT":
             case "EXIT;":
                 System.out.println("EXITING....");
                 break;
@@ -128,6 +139,11 @@ public class Console {
         ArrayList<String> conditions = new ArrayList<>();
         ArrayList<String> sets = new ArrayList<>();
         boolean isEmbedded = false;
+
+        if(manager.currentDatabase() == null){
+            print("No database selected");
+            return null;
+        }
 
         // Check for embedded statement
         Pattern p = Pattern.compile(".* (FROM|from) \\((.*)\\)(.*)");
@@ -245,10 +261,157 @@ public class Console {
 
             return select(inputWithoutJoin);
         }
+        else if(input.toUpperCase().contains("ROLLUP")){
+
+            if (DEBUG)
+                print("Entering ROLLUP");
+
+            String groupings = "";
+            String aggregates = "";
+            final String EMPTY = "";
+
+            Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) " +
+                    "(ROLLUP|rollup) \\((.*)(.*)\\)");
+            Matcher matcher = pattern.matcher(input.replace(";", ""));
+
+            while (matcher.find()) {
+                for (int i = 1; i < matcher.groupCount(); i++) {
+
+                    try {
+                        if (DEBUG) System.out.println("group " + i + ": " + matcher.group(i));
+                    }
+                    catch (NullPointerException bpe) {
+
+                    }
+
+                    if (i == 2) {
+                        aggregates = matcher.group(i);
+                    }
+
+                    if (i == 4) {
+                        table = matcher.group(i);
+                    }
+
+                    if (i == 8) {
+                        groupings = matcher.group(i);
+                    }
+
+                }
+
+            }
+
+            String[] groupingList = groupings.split(", ");
+            ArrayList<String> groupList = new ArrayList<>();
+
+            // Clear parens out of groupList
+            for(String item : groupingList){
+                if(item.length() > 2)
+                    groupList.add(item.substring(1, item.length() - 1));
+                else
+                    groupList.add(item);
+            }
+
+            String group = "";
+
+            while(groupList.size() > 0){
+
+                group += "(";
+
+                for(int i = 0; i < groupList.size(); i++){
+                    group += groupList.get(i) + ",";
+                }
+
+                group = group.substring(0, group.length()-1);
+                group += "), ";
+                groupList.remove(groupList.size()-1);
+
+            }
+
+            group += "()";
+
+            String formattedQuery = String.format("SELECT %s FROM %s GROUP BY GROUPING SETS (%s)", aggregates, table, group);
+
+            return select(formattedQuery);
+
+        }
+        else if(input.toUpperCase().contains("CUBE")){
+
+            if (DEBUG)
+                print("Entering CUBE");
+
+            String groupings = "";
+            String aggregates = "";
+            final String EMPTY = "";
+
+            Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) " +
+                    "(CUBE|cube) \\((.*)(.*)\\)");
+            Matcher matcher = pattern.matcher(input.replace(";", ""));
+
+            while (matcher.find()) {
+                for (int i = 1; i < matcher.groupCount(); i++) {
+
+                    try {
+                        if (DEBUG) System.out.println("group " + i + ": " + matcher.group(i));
+                    }
+                    catch (NullPointerException bpe) {
+
+                    }
+
+                    if (i == 2) {
+                        aggregates = matcher.group(i);
+                    }
+
+                    if (i == 4) {
+                        table = matcher.group(i);
+                    }
+
+                    if (i == 8) {
+                        groupings = matcher.group(i);
+                    }
+
+                }
+
+            }
+
+            String[] groupingList = groupings.split(", ");
+            ArrayList<String> groupList = new ArrayList<>();
+
+            // Clear parens out of groupList
+            for(String item : groupingList){
+                if(item.length() > 2)
+                    groupList.add(item.substring(1, item.length() - 1));
+                else
+                    groupList.add(item);
+            }
+
+            String group = "(";
+
+            for(int i = 0; i < groupList.size(); i++){
+                group += groupList.get(i) + ",";
+            }
+            group = group.substring(0, group.length()-1);
+
+            group += "), ";
+
+            for(int i = 0; i < groupList.size(); i++){
+                group += "(" + groupList.get(i) + "), ";
+            }
+
+            group = group.substring(0, group.length()-2);
+            group += ", ";
+
+
+            group += "()";
+
+            String formattedQuery = String.format("SELECT %s FROM %s GROUP BY GROUPING SETS (%s)", aggregates, table, group);
+
+            return select(formattedQuery);
+
+        }
         else if(input.toUpperCase().contains("GROUP BY GROUPING SETS")) {
 
             if (DEBUG)
-                print("Entering GROUP BY");
+                print("Entering GROUPING SETS");
 
             String groupings = "";
             String aggregates = "";
@@ -327,48 +490,41 @@ public class Console {
 
             // Clear parens out of groupList
             for(String item : groupingList){
-                groupList.add(item.substring(1, item.length() - 1));
+                if(item.length() > 2)
+                    groupList.add(item.substring(1, item.length() - 1));
+                else
+                    groupList.add(item);
             }
 
-            // Break up into separate queries to be ran and then combined
+            String formattedQuery = "SELECT %s FROM %s GROUP BY %s";
+
             for(int i = 0; i < groupList.size(); i++){
 
-                String item = groupList.get(i);
-                String query = "SELECT ";
+                String projection = "";
+                String group = group = groupList.get(i);
 
-                for(String param : rawAgList){
-                    if(param.equals(item)){
-                        query += param;
+                for(int j = 0; j < rawAgList.size(); j++){
 
-                        // Special formatting for the last param added
-                        if(rawAgList.indexOf(param) != rawAgList.size()-1){
-                            query += ", ";
-                        }
-                        else{
-                            query += " ";
-                        }
+                    String[] groupSplit = group.split(",");
 
+                    if(Relation.contains(new ArrayList<String>(Arrays.asList(groupSplit)), rawAgList.get(j))){
+                        projection += rawAgList.get(j) + ", ";
                     }
-                    else if(!param.equals(item) && Relation.contains(groupList, param)){
-
+                    else if(rawAgList.get(j).contains("(")){
+                        projection += rawAgList.get(j) + ", ";
                     }
                     else{
-                        query += param;
-
-                        // Special formatting for the last param added
-                        if(rawAgList.indexOf(param) != rawAgList.size()-1){
-                            query += ", ";
-                        }
-                        else{
-                            query += " ";
-                        }
+                        if(DEBUG) System.out.println("Discarding parameter " + rawAgList.get(j));
                     }
+
                 }
 
-                query += "FROM " + table + " GROUP BY " + item;
-                queries.put(item, query);
+                projection = projection.substring(0, projection.length()-2);
 
+                queries.put(group, String.format(formattedQuery, projection, table, group));
+                if(DEBUG) System.out.println(queries.get(group));
             }
+
 
             ArrayList<Relation> relations = new ArrayList<>();
 
@@ -427,7 +583,7 @@ public class Console {
 
             }
 
-            String[] groupingList = groupings.split(", ");
+            String[] groupingList = groupings.split(", |,");
             String[] aggregateList = aggregates.split(", ");
             ArrayList<String> ag = new ArrayList<>();
 
@@ -470,13 +626,7 @@ public class Console {
 
             if(DEBUG) System.out.println(table);
 
-            return manager.group(table, params, ag, EMPTY_ARRAY, groupingList[0], "String");
-        }
-        else if(input.toUpperCase().contains("ROLLUP")){
-
-        }
-        else if(input.toUpperCase().contains("CUBE")){
-
+            return manager.group(table, params, ag, new ArrayList<String>(Arrays.asList(groupingList)));
         }
         // Basic SELECT statement when no special operations are included.  May or may not include a WHERE clause
         else{
@@ -485,7 +635,7 @@ public class Console {
                 print("Entering SELECT");
 
             Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+)" +
-                    "( (WHERE|where) (\\w* (=|>|<|!=) (\"\\w+\"|\\d+))( (((AND|and)|(OR|or)) (\\w* (=|>|<|!=) (\"\\w+\"|\\d+))))*)?");
+                    "( (WHERE|where) (\\w* (=|>|<|!=) (\'\\w+\'|\\d+))( (((AND|and)|(OR|or)) (\\w* (=|>|<|!=) (\'\\w+\'|\\d+))))*)?");
             Matcher matcher = pattern.matcher(input.replace(";",""));
             while (matcher.find()) {
                 for(int i = 1; i < matcher.groupCount(); i++) {
@@ -632,9 +782,130 @@ public class Console {
 
     private void update(String input){
 
+        if(DEBUG)
+            print("ENTERING UPDATE");
+
+
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
+        ArrayList<String> sets = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("(?i)UPDATE (\\w+) SET (.*) WHERE (.*)(.*)");
+        Matcher matcher = pattern.matcher(input.replace(";",""));
+
+        String table = "";
+        String set = "";
+        String condition = "";
+
+        while(matcher.find()){
+            for(int i = 0; i < matcher.groupCount(); i++){
+                if(DEBUG) System.out.println("Group " + i + ": " + matcher.group(i));
+
+                if(i == 1){
+                    table = matcher.group(i);
+                }
+
+                if(i == 2){
+                    set = matcher.group(i);
+                }
+
+                if(i == 3){
+
+                    if(matcher.group(i) == null){
+                        continue;
+                    }
+
+                    String[] split = matcher.group(i).split(" ");
+
+                    // Starts at 1 because of the leading space in the WHERE clause
+                    for(int j = 0; j < split.length; j+=4){
+                        conditions.add(split[j].replace("\"","'").trim() + " " + split[j+1].trim() + " " + split[j+2].replace("\"","'").trim());
+
+                        try{
+                            sets.add(split[j+3].trim());
+                        }
+                        catch(Exception ex){
+
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+        String[] split = set.split(",|, ");
+        for(String s : split){
+            params.add(s);
+        }
+
+        for(String p : params) {
+
+            String[] setSplt = p.split(" = |=");
+            String param = setSplt[0];
+            String value = setSplt[1];
+
+
+            manager.update(table, param.trim(), value.trim(), conditions, sets);
+        }
+
     }
 
     private void delete(String input){
+
+        if(DEBUG)
+            print("ENTERING DELETE");
+
+
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
+        ArrayList<String> sets = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("(?i)DELETE FROM (\\w+)( WHERE (.*)(.*))?");
+        Matcher matcher = pattern.matcher(input.replace(";",""));
+
+        String table = "";
+        String condition = "";
+
+        while(matcher.find()){
+            for(int i = 0; i < matcher.groupCount(); i++){
+                if(DEBUG) System.out.println("Group " + i + ": " + matcher.group(i));
+
+                if(i == 1){
+                    table = matcher.group(i);
+                }
+
+                if(i == 3){
+
+                    if(matcher.group(i) == null){
+                        continue;
+                    }
+
+                    String[] split = matcher.group(i).split(" ");
+
+                    // Starts at 1 because of the leading space in the WHERE clause
+                    for(int j = 0; j < split.length; j+=4){
+                        conditions.add(split[j].replace("\"","'").trim() + " " + split[j+1].trim() + " " + split[j+2].replace("\"","'").trim());
+
+                        try{
+                            sets.add(split[j+3].trim());
+                        }
+                        catch(Exception ex){
+
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+        if(conditions.size() == 0){
+            manager.delete(table, conditions, sets);
+        }
+        else{
+            manager.delete(table, conditions, sets);
+        }
 
     }
 
@@ -726,6 +997,13 @@ public class Console {
                                 return;
                             }
 
+                            boolean containTableInDB = manager.currentDatabase().getTablesHash().containsKey(tableName);
+
+                            if (containTableInDB)
+                            {
+                                print("TABLE " + " already exists.");
+                                return;
+                            }
                             if (typeName.equalsIgnoreCase("date(mm/dd/yyyy)"))
                             {
                                 typeName = "date";
@@ -748,7 +1026,10 @@ public class Console {
 
                             //semantics check for type
                             if (!(typeName.equalsIgnoreCase("character")||
+                                    typeName.equalsIgnoreCase("char")||
+                                    typeName.equalsIgnoreCase("varchar")||
                                     typeName.equalsIgnoreCase("integer")||
+                                    typeName.equalsIgnoreCase("int")||
                                     typeName.equalsIgnoreCase("number")||
                                     typeName.equalsIgnoreCase("date")))
                             {
