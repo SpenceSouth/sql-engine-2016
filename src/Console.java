@@ -767,6 +767,60 @@ public class Console {
 
     private void delete(String input){
 
+        if(DEBUG)
+            print("ENTERING DELETE");
+
+
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
+        ArrayList<String> sets = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("(?i)DELETE FROM (\\w+)( WHERE (.*)(.*))?");
+        Matcher matcher = pattern.matcher(input.replace(";",""));
+
+        String table = "";
+        String condition = "";
+
+        while(matcher.find()){
+            for(int i = 0; i < matcher.groupCount(); i++){
+                if(DEBUG) System.out.println("Group " + i + ": " + matcher.group(i));
+
+                if(i == 1){
+                    table = matcher.group(i);
+                }
+
+                if(i == 3){
+
+                    if(matcher.group(i) == null){
+                        continue;
+                    }
+
+                    String[] split = matcher.group(i).split(" ");
+
+                    // Starts at 1 because of the leading space in the WHERE clause
+                    for(int j = 0; j < split.length; j+=4){
+                        conditions.add(split[j].replace("\"","'").trim() + " " + split[j+1].trim() + " " + split[j+2].replace("\"","'").trim());
+
+                        try{
+                            sets.add(split[j+3].trim());
+                        }
+                        catch(Exception ex){
+
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+        if(conditions.size() == 0){
+            manager.delete(table, conditions, sets);
+        }
+        else{
+            manager.delete(table, conditions, sets);
+        }
+
     }
 
     private void create(String input){
