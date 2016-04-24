@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 

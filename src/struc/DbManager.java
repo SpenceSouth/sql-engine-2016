@@ -384,14 +384,15 @@ public class DbManager {
 
             for(int j = 0; j < relationHeaders.size(); j++){
 
-                for(int k = 0; k < r1Headers.size(); k++){
+                if(!r1Headers.contains(relationHeaders.get(j))){
+                    Rec rec = new Rec();
+                    rec.addEntry("null");
+                    newRecs.add(rec);
+                    continue;
+                }
 
-                    if(!r1Headers.contains(relationHeaders.get(j))){
-                        Rec rec = new Rec();
-                        rec.addEntry("null");
-                        newRecs.add(rec);
-                    }
-                    else if(r1Headers.get(k).equals(relationHeaders.get(j))){
+                for(int k = 0; k < r1Headers.size(); k++){
+                    if(r1Headers.get(k).equals(relationHeaders.get(j))){
                         newRecs.add(recs.get(k));
                     }
                 }
@@ -406,14 +407,15 @@ public class DbManager {
 
             for(int j = 0; j < relationHeaders.size(); j++){
 
-                for(int k = 0; k < r2Headers.size(); k++){
+                if(!r2Headers.contains(relationHeaders.get(j))){
+                    Rec rec = new Rec();
+                    rec.addEntry("null");
+                    newRecs.add(rec);
+                    continue;
+                }
 
-                    if(!r2Headers.contains(relationHeaders.get(j))){
-                        Rec rec = new Rec();
-                        rec.addEntry("null");
-                        newRecs.add(rec);
-                    }
-                    else if(r2Headers.get(k).equals(relationHeaders.get(j))){
+                for(int k = 0; k < r2Headers.size(); k++){
+                    if(r2Headers.get(k).equals(relationHeaders.get(j))){
                         newRecs.add(recs.get(k));
                     }
                 }
