@@ -1,6 +1,7 @@
 import struc.Col;
 import struc.Db;
 import struc.DbManager;
+import struc.Rec;
 import struc.Relation;
 
 import java.io.BufferedReader;
@@ -698,8 +699,85 @@ public class Console {
 
     }
 
-    private void insert(String input){
+    private void insert(String input)
+    {
+        input = input.replace(";","");
+        Pattern pattern = Pattern.compile("(?i)(insert into) (\\w+)\\s*(\\()\\s*(.*)(\\))\\s*(values)\\s*(\\()\\s*(.*)(\\))");
+        Matcher matcher = pattern.matcher(input);
 
+        String tableName = null;
+        int sizeFields = 0;
+        int sizeRecords = 0;
+        ArrayList<Col> listCol = new ArrayList<>();
+        Relation table=null;
+        ArrayList<Rec> tempArrayListRecs = new ArrayList<>();
+        while(matcher.find())
+        {
+            for(int i = 0; i < matcher.groupCount(); i++)
+            {
+                if(i == 1)
+                {
+                    tableName = matcher.group(2);
+                    boolean tableExist = manager.currentDatabase().TableExist(tableName);
+                    if(!tableExist) {
+                        System.out.println(tableName + " doesn't exist, please create the table and try again");
+                        return;
+                    }
+
+                    if (DEBUG)
+                        System.out.println(matcher.group(2));
+                }
+
+                if(i == 3)
+                {
+                    String fieldNameDump = matcher.group(4);
+                    String[] listColumns = fieldNameDump.split(",");
+                    sizeFields = listColumns.length;
+                    List<String> wordList = Arrays.asList(listColumns);
+                    for (String columnString : wordList)
+                    {
+                        columnString = columnString.trim();
+                        table = manager.currentDatabase().getTable(tableName);
+                        boolean checkIfColExist = table.colExist(columnString);
+
+                        if(!checkIfColExist)
+                        {
+                            System.out.println(columnString+" doesn't exist");
+                            return;
+                        }
+                        listCol.add(table.getColumnByName(columnString));
+                    }
+                    if (DEBUG)
+                    System.out.println(matcher.group(4));
+                }
+
+                if (i==4)
+                {
+                    String recordDump = matcher.group(8);
+                    String[] listRecs = recordDump.split(",");
+                    sizeRecords = listRecs.length;
+                    List<String> wordList = Arrays.asList(listRecs);
+
+                    //check to that the number of columns listed
+                    //matches the number of values
+                    if (sizeFields != sizeRecords)
+                    {
+                        System.out.println("Error: Number of Columns: "+sizeFields+" Number of Values: "+sizeRecords);
+                        return;
+                    }
+
+                    for (String e : wordList)
+                    {
+                        e = e.trim();
+                        tempArrayListRecs.add(new Rec(e));
+                    }
+
+                    if (DEBUG)
+                    System.out.println(recordDump);
+                }
+            }
+            table.insertRecordsIntoColumns(tempArrayListRecs);
+        }
     }
 
     private void update(String input){
