@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -126,6 +126,11 @@ public class Console {
         ArrayList<String> conditions = new ArrayList<>();
         ArrayList<String> sets = new ArrayList<>();
         boolean isEmbedded = false;
+
+        if(manager.currentDatabase() == null){
+            print("No database selected");
+            return null;
+        }
 
         // Check for embedded statement
         Pattern p = Pattern.compile(".* (FROM|from) \\((.*)\\)(.*)");
@@ -803,7 +808,10 @@ public class Console {
 
                             //semantics check for type
                             if (!(typeName.equalsIgnoreCase("character")||
+                                    typeName.equalsIgnoreCase("char")||
+                                    typeName.equalsIgnoreCase("varchar")||
                                     typeName.equalsIgnoreCase("integer")||
+                                    typeName.equalsIgnoreCase("int")||
                                     typeName.equalsIgnoreCase("number")||
                                     typeName.equalsIgnoreCase("date")))
                             {
