@@ -6,6 +6,7 @@ import struc.Relation;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -695,6 +696,73 @@ public class Console {
 
     private void update(String input){
 
+        if(DEBUG)
+            print("ENTERING UPDATE");
+
+
+        ArrayList<String> params = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
+        ArrayList<String> sets = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("(?i)UPDATE (\\w+) SET (.*) WHERE (.*)(.*)");
+        Matcher matcher = pattern.matcher(input.replace(";",""));
+
+        String table = "";
+        String set = "";
+        String condition = "";
+
+        while(matcher.find()){
+            for(int i = 0; i < matcher.groupCount(); i++){
+                if(DEBUG) System.out.println("Group " + i + ": " + matcher.group(i));
+
+                if(i == 1){
+                    table = matcher.group(i);
+                }
+
+                if(i == 2){
+                    set = matcher.group(i);
+                }
+
+                if(i == 3){
+
+                    if(matcher.group(i) == null){
+                        continue;
+                    }
+
+                    String[] split = matcher.group(i).split(" ");
+
+                    // Starts at 1 because of the leading space in the WHERE clause
+                    for(int j = 0; j < split.length; j+=4){
+                        conditions.add(split[j].replace("\"","'").trim() + " " + split[j+1].trim() + " " + split[j+2].replace("\"","'").trim());
+
+                        try{
+                            sets.add(split[j+3].trim());
+                        }
+                        catch(Exception ex){
+
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+        String[] split = set.split(",|, ");
+        for(String s : split){
+            params.add(s);
+        }
+
+        for(String p : params) {
+
+            String[] setSplt = p.split(" = |=");
+            String param = setSplt[0];
+            String value = setSplt[1];
+
+
+            manager.update(table, param.trim(), value.trim(), conditions, sets);
+        }
+
     }
 
     private void delete(String input){
@@ -793,7 +861,7 @@ public class Console {
 
                             if (containTableInDB)
                             {
-                                print("TABLE " + " already exists."); // edited here MARKER!!
+                                print("TABLE " + " already exists.");
                                 return;
                             }
                             if (typeName.equalsIgnoreCase("date(mm/dd/yyyy)"))
