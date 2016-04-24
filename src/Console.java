@@ -329,7 +329,10 @@ public class Console {
 
             // Clear parens out of groupList
             for(String item : groupingList){
-                groupList.add(item.substring(1, item.length() - 1));
+                if(item.length() > 2)
+                    groupList.add(item.substring(1, item.length() - 1));
+                else
+                    groupList.add(item);
             }
 
             String formattedQuery = "SELECT %s FROM %s GROUP BY %s";
