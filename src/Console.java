@@ -1,4 +1,5 @@
 import struc.Col;
+import struc.Db;
 import struc.DbManager;
 import struc.Relation;
 
@@ -781,6 +782,13 @@ public class Console {
                                 return;
                             }
 
+                            boolean containTableInDB = manager.currentDatabase().getTablesHash().containsKey(tableName);
+
+                            if (containTableInDB)
+                            {
+                                print("TABLE " + " already exists.");
+                                return;
+                            }
                             if (typeName.equalsIgnoreCase("date(mm/dd/yyyy)"))
                             {
                                 typeName = "date";
