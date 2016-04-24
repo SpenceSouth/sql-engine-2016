@@ -883,10 +883,12 @@ public class Relation {
         //Validation of Structure passed in
         //Checks that each element has the same number of fields and finds each field's max size which
         //must be less than or equal to 25 else it will default to 25
+        //Do the Headers first then check the records
         int[] colSize = new int[headers.size()];
         for (int i =0; i < headers.size();i++){
             colSize[i] = headers.get(i).length();
         }
+        //Now check the records
         for(String[] rec : records){
             if(rec.length == headers.size()){
                 for(int i = 0; i <  rec.length;i++){
@@ -909,16 +911,22 @@ public class Relation {
         }
         String output = "";
         String divider = "\n";
+        //Create a Header bar
         for(int i =0; i < headers.size();i++){
             output += String.format("%1$-"+colSize[i]+"s |",headers.get(i));
         }
+        //Create a divider
         for(int j = 0 ; j < output.length(); j++){
             divider += "-";
         }
         divider += "\n";
-        output += divider;
+        //finish up formatting header by adding a
+        output = divider + output + divider;
+        //add in the records
         for(String[] rec : records){
             for(int i =0; i < headers.size();i++){
+                //grab the records which are simple strings
+                // TODO: Fix to use the data structure better
                 output += String.format("%1$-"+colSize[i]+"s |",rec[i]);
             }
             output += divider;
