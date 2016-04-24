@@ -791,7 +791,7 @@ public class Console {
 
                             if (containTableInDB)
                             {
-                                print("TABLE " + " already exists.");
+                                print("TABLE " + " already exists."); // edited here MARKER!!
                                 return;
                             }
                             if (typeName.equalsIgnoreCase("date(mm/dd/yyyy)"))
