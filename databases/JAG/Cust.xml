@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Cust table_Column_Count="4" table_Record_Count="5">
+    <CNO is_null_allowed="false" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'C1'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'C2'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'C3'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'C4'</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'C5'</data>
+		</Record4>
+    </CNO>
+    <CNAME is_null_allowed="true" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Sugar and Spice, CPA's'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'ABC Product'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Nachtfliegen, Inc.'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'System's Group'</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'JTA Inc.'</data>
+		</Record4>
+    </CNAME>
+	<CITY is_null_allowed="true" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'San Diego'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'New York'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Philadelphia'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Chicago'</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Norman'</data>
+		</Record4>
+    </CITY>
+</Cust>

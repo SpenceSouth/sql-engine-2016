@@ -339,4 +339,77 @@ public class DbManager {
         return dbs;
     }
 
+    public Relation add(Relation r1, Relation r2){
+
+        HashMap<String, Col> columns = new HashMap<>();
+        Relation relation = new Relation();
+        ArrayList<String> r1Headers = new ArrayList<>();
+        ArrayList<String> r2Headers = new ArrayList<>();
+        ArrayList<String> relationHeaders = new ArrayList<>();
+
+        for(Col col : r1.getColumns()){
+            Col c = new Col();
+            c.copyAttributes(col);
+            columns.put(col.getName(), c);
+        }
+
+        for(Col col : r2.getColumns()){
+            Col c = new Col();
+            c.copyAttributes(col);
+            columns.put(col.getName(), c);
+        }
+
+        // Add these column templates to the table
+        for(String key : columns.keySet()){
+            relation.insertColumn(columns.get(key));
+        }
+
+        // Get header data
+        for(Col col : relation.getColumns()){
+            relationHeaders.add(col.getName());
+        }
+
+        for(Col col : r1.getColumns()){
+            r1Headers.add(col.getName());
+        }
+
+        for(Col col : r2.getColumns()){
+            r2Headers.add(col.getName());
+        }
+
+        // Compare rows in tables to add
+        for(int i = 0; i < r1.getRecordSize(); i++){
+            ArrayList<Rec> recs = r1.getRecordsByRowIndex(i);
+
+            for(int j = 0; j < relationHeaders.size(); j++){
+                if(!r1Headers.contains(relationHeaders.get(j))){
+                    Rec rec = new Rec();
+                    rec.addEntry("null");
+                    recs.add(j, rec);
+                }
+            }
+
+            relation.insertRecordsIntoColumns(recs);
+        }
+
+        for(int i = 0; i < r2.getRecordSize(); i++){
+            ArrayList<Rec> recs = r2.getRecordsByRowIndex(i);
+
+            for(int j = 0; j < relationHeaders.size(); j++){
+                if(!r2Headers.contains(relationHeaders.get(j))){
+                    Rec rec = new Rec();
+                    rec.addEntry("null");
+                    recs.add(j, rec);
+                }
+            }
+
+            relation.insertRecordsIntoColumns(recs);
+        }
+
+
+
+
+        return relation;
+    }
+
 }

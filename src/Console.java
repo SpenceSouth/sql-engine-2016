@@ -1,15 +1,13 @@
-import struc.Col;
-import struc.Db;
 import struc.DbManager;
 import struc.Relation;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,12 +53,24 @@ public class Console {
         // Capture first token to send to appropriate regular expressions
         String first = input.split(" ")[0];
 
+        Relation r;
+
         switch (first.toUpperCase()){
 
             case "SELECT":
+                r = select(input);
+                if(r == null){
+                    System.out.println("No data to be returned");
+                    break;
+                }
                 print(select(input).toString());
                 break;
             case "WSELECT":
+                r = select(input);
+                if(r == null){
+                    System.out.println("No data to be returned");
+                    break;
+                }
                 print(select(input).toString());
                 break;
             case "INSERT":
@@ -232,11 +242,232 @@ public class Console {
 
             return select(inputWithoutJoin);
         }
+        else if(input.toUpperCase().contains("GROUP BY GROUPING SETS")) {
+
+            if (DEBUG)
+                print("Entering GROUP BY");
+
+            String groupings = "";
+            String aggregates = "";
+            final String EMPTY = "";
+
+            Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) " +
+                    "(GROUPING|grouping) (SETS|sets) \\((.*)(.*)\\)");
+            Matcher matcher = pattern.matcher(input.replace(";", ""));
+
+            while (matcher.find()) {
+                for (int i = 1; i < matcher.groupCount(); i++) {
+
+                    try {
+                        if (DEBUG) System.out.println("group " + i + ": " + matcher.group(i));
+                    }
+                    catch (NullPointerException bpe) {
+
+                    }
+
+                    if (i == 2) {
+                        aggregates = matcher.group(i);
+                    }
+
+                    if (i == 4) {
+                        table = matcher.group(i);
+                    }
+
+                    if (i == 9) {
+                        groupings = matcher.group(i);
+                    }
+
+                }
+
+            }
+
+            String[] groupingList = groupings.split(", ");
+            String[] aggregateList = aggregates.split(", ");
+            ArrayList<String> ag = new ArrayList<>();
+
+            for (String item : aggregateList) {
+                if (item.contains("avg") || item.contains("AVG")) {
+                    ag.add("avg");
+                    item = item.replace("avg", "").replace("AVG", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else if (item.contains("count") || item.contains("COUNT")) {
+                    ag.add("count");
+                    item = item.replace("count", "").replace("COUNT", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else if (item.contains("min") || item.contains("MIN")) {
+                    ag.add("min");
+                    item = item.replace("min", "").replace("MIN", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else if (item.contains("max") || item.contains("MAX")) {
+                    ag.add("max");
+                    item = item.replace("max", "").replace("MAX", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else if (item.contains("sum") || item.contains("SUM")) {
+                    ag.add("sum");
+                    item = item.replace("sum", "").replace("SUM", "");
+                    item = item.substring(1, item.length() - 1);
+                    params.add(item);
+                } else {
+                    params.add(item);
+                    ag.add(EMPTY);
+                }
+            }
+
+            HashMap<String, String> queries = new HashMap<>();
+
+            ArrayList<String> groupList = new ArrayList<>();
+            ArrayList<String> rawAgList = new ArrayList<String>(Arrays.asList(aggregateList));
+
+            // Clear parens out of groupList
+            for(String item : groupingList){
+                groupList.add(item.substring(1, item.length() - 1));
+            }
+
+            // Break up into separate queries to be ran and then combined
+            for(int i = 0; i < groupList.size(); i++){
+
+                String item = groupList.get(i);
+                String query = "SELECT ";
+
+                for(String param : rawAgList){
+                    if(param.equals(item)){
+                        query += param;
+
+                        // Special formatting for the last param added
+                        if(rawAgList.indexOf(param) != rawAgList.size()-1){
+                            query += ", ";
+                        }
+                        else{
+                            query += " ";
+                        }
+
+                    }
+                    else if(!param.equals(item) && Relation.contains(groupList, param)){
+
+                    }
+                    else{
+                        query += param;
+
+                        // Special formatting for the last param added
+                        if(rawAgList.indexOf(param) != rawAgList.size()-1){
+                            query += ", ";
+                        }
+                        else{
+                            query += " ";
+                        }
+                    }
+                }
+
+                query += "FROM " + table + " GROUP BY " + item;
+                queries.put(item, query);
+
+            }
+
+            ArrayList<Relation> relations = new ArrayList<>();
+
+            for(String key : queries.keySet()){
+
+                relations.add(select(queries.get(key)));
+
+            }
+
+            // Add all the relations until only two are left
+            while(relations.size() > 2){
+                Relation r1 = relations.remove(0);
+                Relation r2 = relations.remove(1);
+
+                Relation r = manager.add(r1, r2);
+                relations.add(0, r);
+            }
+
+            return manager.add(relations.get(0), relations.get(1));
+        }
         else if(input.toUpperCase().contains("GROUP BY")){
 
-        }
-        else if(input.toUpperCase().contains("GROUPING SETS")){
+            if(DEBUG)
+                print("Entering GROUP BY");
 
+            String groupings = "";
+            String aggregates = "";
+            final String EMPTY = "";
+
+            Pattern pattern = Pattern.compile("(SELECT|select) (.+) (FROM|from) (\\w+) (GROUP|group) (BY|by) (.*)(.*)");
+            Matcher matcher = pattern.matcher(input.replace(";",""));
+
+            while (matcher.find()) {
+                for(int i = 1; i < matcher.groupCount(); i++) {
+
+                    try {
+                        if (DEBUG) System.out.println("group " + i + ": " + matcher.group(i));
+                    }
+                    catch (NullPointerException bpe){
+
+                    }
+
+                    if(i == 2){
+                        aggregates = matcher.group(i);
+                    }
+
+                    if(i == 4){
+                        table = matcher.group(i);
+                    }
+
+                    if(i == 7){
+                        groupings = matcher.group(i);
+                    }
+
+                }
+
+            }
+
+            String[] groupingList = groupings.split(", ");
+            String[] aggregateList = aggregates.split(", ");
+            ArrayList<String> ag = new ArrayList<>();
+
+            for(String item : aggregateList){
+                if(item.contains("avg") || item.contains("AVG")){
+                    ag.add("avg");
+                    item = item.replace("avg", "").replace("AVG","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else if(item.contains("count") || item.contains("COUNT")){
+                    ag.add("count");
+                    item = item.replace("count", "").replace("COUNT","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else if(item.contains("min") || item.contains("MIN")){
+                    ag.add("min");
+                    item = item.replace("min", "").replace("MIN","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else if(item.contains("max") || item.contains("MAX")){
+                    ag.add("max");
+                    item = item.replace("max", "").replace("MAX","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else if(item.contains("sum") || item.contains("SUM")){
+                    ag.add("sum");
+                    item = item.replace("sum", "").replace("SUM","");
+                    item = item.substring(1, item.length()-1);
+                    params.add(item);
+                }
+                else{
+                    params.add(item);
+                    ag.add(EMPTY);
+                }
+            }
+
+            if(DEBUG) System.out.println(table);
+
+            return manager.group(table, params, ag, EMPTY_ARRAY, groupingList[0], "String");
         }
         else if(input.toUpperCase().contains("ROLLUP")){
 

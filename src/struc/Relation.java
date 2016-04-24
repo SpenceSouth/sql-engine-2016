@@ -613,7 +613,7 @@ public class Relation {
         return defaults;
     }
 
-    private boolean contains(ArrayList<String> list, String term){
+    public static boolean contains(ArrayList<String> list, String term){
         for(String str : list){
             if (str.equals(term)){
                 return true;
@@ -883,48 +883,58 @@ public class Relation {
     //Display Functions
     private String displayTable(ArrayList<String> headers,ArrayList<String[]> records){
 
-      //Validation of Structure passed in 
-      //Checks that each element has the same number of fields and finds each fields max size which
-      //must be less than or equal to 25 else it will default to 25
-      int[] colSize = new int[headers.size()];
-      for(String[] rec : records){
-        if(rec.length == headers.size()){
-          for(int i = 0; i <  rec.length;i++){
-            if(colSize[i] < rec[i].length()){
-              if(rec[i].length() > 25){
-                colSize[i] = 25;
-              }
-              else{
-                colSize[i] = rec[i].length();
-              }
-            }
-          }
+        //Validation of Structure passed in
+        //Checks that each element has the same number of fields and finds each field's max size which
+        //must be less than or equal to 25 else it will default to 25
+        //Do the Headers first then check the records
+        int[] colSize = new int[headers.size()];
+        for (int i =0; i < headers.size();i++){
+            colSize[i] = headers.get(i).length();
         }
-        else{
+        //Now check the records
+        for(String[] rec : records){
+            if(rec.length == headers.size()){
+                for(int i = 0; i <  rec.length;i++){
+                    if(colSize[i] < rec[i].length()){
+                        if(rec[i].length() > 25){
+                            colSize[i] = 25;
+                        }
+                        else{
+                            colSize[i] = rec[i].length();
+                        }
+                    }
+                }
+            }
+            else{
 //          if(DEBUG_ON){
 //            System.out.println("Error : Mismatching Header length with records");
 //            DebugHandler.append("RelationErrorLog.txt", "Error : Mismatching Header length with records");
 //          }
+            }
         }
-      }
-      String output = "";
-      String divider = "\n";
-      for(int i =0; i < headers.size();i++){
-        output += String.format(" %"+colSize[i]+"s |",headers.get(i));
-        for(int j = 0 ; j < colSize[i]; j++){
-          divider += "-";
-        }
-        
-      }
-      divider += "\n";
-      output += divider;
-      for(String[] rec : records){
+        String output = "";
+        String divider = "\n";
+        //Create a Header bar
         for(int i =0; i < headers.size();i++){
-          output += String.format(" %"+colSize[i]+"s |",rec[i]);
+            output += String.format("%1$-"+colSize[i]+"s |",headers.get(i));
         }
-        output += divider;
-      }
-      return output;
+        //Create a divider
+        for(int j = 0 ; j < output.length(); j++){
+            divider += "-";
+        }
+        divider += "\n";
+        //finish up formatting header by adding a
+        output = divider + output + divider;
+        //add in the records
+        for(String[] rec : records){
+            for(int i =0; i < headers.size();i++){
+                //grab the records which are simple strings
+                // TODO: Fix to use the data structure better
+                output += String.format("%1$-"+colSize[i]+"s |",rec[i]);
+            }
+            output += divider;
+        }
+        return output;
     }
 
     /** NAGA: Table needs to be displayed on to string call */
@@ -957,5 +967,33 @@ public class Relation {
 
         return displayTable(headers, records);
 
+    }
+
+    public String toStringWSelect(){
+
+        ArrayList<String> headers = new ArrayList<>();
+        ArrayList<String[]> records = new ArrayList<>();
+
+        for (Col col : columns){
+            headers.add(col.getName());
+        }
+
+        if(getRecordSize() < 1){
+            return headers.toString();
+        }
+
+        for(int i = 0; i < getRecordSize(); i++){
+
+            ArrayList<Rec> recs = getRecordsByRowIndex(i);
+            String[] r = new String[recs.size()];
+
+            for(int j = 0; j < recs.size(); j++){
+                r[j] = recs.get(j).getLastEntry().getData();
+            }
+
+            records.add(r);
+        }
+
+        return displayTable(headers, records);
     }
 }

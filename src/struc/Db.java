@@ -177,9 +177,6 @@ public class Db {
 
         }
 
-
-        System.out.println(derivedRelation.getColumns());
-
         for(int i = 0; i < r1RowsToBeJoined.size(); i++){
             ArrayList<Rec> recs1 = r1.getRecordsByRowIndex(r1RowsToBeJoined.get(i));
             ArrayList<Rec> recs2 = r2.getRecordsByRowIndex(r2RowsToBeJoined.get(i));

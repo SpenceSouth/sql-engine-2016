@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Prdct table_Column_Count="5" table_Record_Count="6">
+    <PNO is_null_allowed="false" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P1'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P2'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P3'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P4'</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P5'</data>
+		</Record4>
+		<Record5>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P6'</data>
+		</Record5>
+    </PNO>
+    <PNAME is_null_allowed="true" restriction="1" restriction_2="0" type="VARCHAR">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Modem'</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Monitor'</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Printer'</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'CPU cards'</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Disk Unit'</data>
+		</Record4>
+		<Record5>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">'Tape Drive'</data>
+		</Record5>
+    </PNAME>
+	<COST is_null_allowed="true" restriction="5" restriction_2="0" type="int">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">350</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">400</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">700</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">2500</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">700</data>
+		</Record4>
+		<Record5>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">1200</data>
+		</Record5>
+    </COST>
+	<AVQTY is_null_allowed="true" restriction="5" restriction_2="0" type="int">
+        <Record0>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">100</data>
+        </Record0>
+        <Record1>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">45</data>
+        </Record1>
+        <Record2>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">15</data>
+        </Record2>
+        <Record3>
+            <data timestamp="Wed Apr 06 14:20:49 EDT 2016">10</data>
+        </Record3>
+		<Record4>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">25</data>
+		</Record4>
+		<Record5>
+			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">27</data>
+		</Record5>
+    </AVQTY>
+</Prdct>
