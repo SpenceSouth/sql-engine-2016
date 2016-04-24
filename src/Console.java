@@ -74,7 +74,7 @@ public class Console {
                     System.out.println("No data to be returned");
                     break;
                 }
-                print(select(input).toString());
+                print(select(input).toStringW());
                 System.out.println("SELECT execution time (0.01 sec)");
                 break;
             case "INSERT":

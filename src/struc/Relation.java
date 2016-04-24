@@ -1096,7 +1096,10 @@ public class Relation {
         return displayTable(headers, records);
 
     }
-
+    public String toStringW(){
+        Formatting table = new Formatting();
+        return table.tableToStringW(new ArrayList<Col>(columns));
+    }
     public String toStringWSelect(){
 
         ArrayList<String> headers = new ArrayList<>();
