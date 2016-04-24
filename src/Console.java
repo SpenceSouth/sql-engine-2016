@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private final boolean DEBUG = true;
+    private static final boolean DEBUG = true;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -30,8 +30,16 @@ public class Console {
 
         boolean stop = false;
 
-        while(!stop) {
-            stop = console.accept();
+        try {
+            while (!stop) {
+                stop = console.accept();
+            }
+        }
+        catch (Exception ex){
+            if(DEBUG)
+                ex.printStackTrace();
+            else
+                System.out.println("Unspecified syntax error occurred");
         }
     }
 
