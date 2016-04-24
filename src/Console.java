@@ -464,6 +464,7 @@ public class Console {
                 }
             }
 
+            if(DEBUG) System.out.println(table);
 
             return manager.group(table, params, ag, EMPTY_ARRAY, groupingList[0], "String");
         }
