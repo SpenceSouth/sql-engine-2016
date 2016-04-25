@@ -663,8 +663,6 @@ public class Relation {
 
                 }
             }
-
-            System.out.println();
         }
     }
 
