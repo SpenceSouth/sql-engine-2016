@@ -1,6 +1,7 @@
 package struc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by spencesouthard on 4/11/16.
@@ -121,4 +122,8 @@ public class Col {
         return getName() + ":" + getType();
     }
 
+    public void addRec(HashMap<String, String> dataArrayList)
+    {
+        recs.add(new Rec(dataArrayList));
+    }
 }
