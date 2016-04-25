@@ -207,5 +207,8 @@ public class Db {
     }
 
 
-
+    public HashMap<String, Relation>  getTableHashMap()
+    {
+        return tables;
+    }
 }
