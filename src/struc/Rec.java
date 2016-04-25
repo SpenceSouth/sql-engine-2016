@@ -1,8 +1,6 @@
 package struc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by spencesouthard on 4/11/16.
@@ -26,9 +24,19 @@ public class Rec {
 
     public Rec(HashMap<String, String> dataArrayList)
     {
+        ArrayList<String> keys = new ArrayList<>();
+        ArrayList<String> values = new ArrayList<>();
         for(Map.Entry<String, String> value: dataArrayList.entrySet())
         {
-            addEntry(value.getKey(), value.getValue());
+            keys.add(value.getKey());
+            values.add(value.getValue());
+        }
+        Collections.reverse(keys);
+        Collections.reverse(values);
+
+        for(int i = 0; i<keys.size(); i++)
+        {
+            addEntry(keys.get(i), values.get(i));
         }
     }
 
