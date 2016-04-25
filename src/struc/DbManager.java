@@ -239,10 +239,10 @@ public class DbManager {
                         if (fieldTag.getNodeType() == Node.ELEMENT_NODE) {
                             //getting the table attributes.
                             Element eElement = (Element) fieldTag;
-                            String isNullAllowed = eElement.getAttribute("isNullable");
-                            String maxLength = eElement.getAttribute("Max_Length");
-                            String decimalsAllowed = eElement.getAttribute("Decimals_Allowed");
-                            String type = eElement.getAttribute("Type");
+                            String isNullAllowed = eElement.getAttribute("is_null_allowed");
+                            String maxLength = eElement.getAttribute("restriction");
+                            String decimalsAllowed = eElement.getAttribute("restriction_2");
+                            String type = eElement.getAttribute("type");
 
                             Col col = new Col(columnName,
                                     type,
@@ -285,7 +285,7 @@ public class DbManager {
                                         //get the data from the data tag.
                                         String data = dataElement.getTextContent();
                                         //get the timestamp attribrute.
-                                        timestampData = dataElement.getAttribute("Timestamp");
+                                        timestampData = dataElement.getAttribute("timestamp");
                                         //create an arrayList of recs
                                         dataArrayList.put(data, timestampData);
                                     }
@@ -354,7 +354,7 @@ public class DbManager {
                     //create first tag which should be a table tag.
                     Element rootElement = doc.createElement(key);
                     //create the table count attr.
-                    Attr attrTableCount = doc.createAttribute("Column_Count");
+                    Attr attrTableCount = doc.createAttribute("table_Column_Count");
                     attrTableCount.setValue(size+"");
                     rootElement.setAttributeNode(attrTableCount);
 
@@ -378,19 +378,19 @@ public class DbManager {
 
                         //create column tag and it's attrs.
                         Element fieldName = doc.createElement(columnName);
-                        Attr attrType = doc.createAttribute("Type");
+                        Attr attrType = doc.createAttribute("type");
                         attrType.setValue(columnType);
                         fieldName.setAttributeNode(attrType);
 
-                        Attr attrRest = doc.createAttribute("Max_Length");
+                        Attr attrRest = doc.createAttribute("restriction");
                         attrRest.setValue(maxLength + "");
                         fieldName.setAttributeNode(attrRest);
 
-                        Attr attrRest2 = doc.createAttribute("Decimals_Allowed");
+                        Attr attrRest2 = doc.createAttribute("restriction_2");
                         attrRest2.setValue(decimalsAllowed + "");
                         fieldName.setAttributeNode(attrRest2);
 
-                        Attr attrNull = doc.createAttribute("isNullable");
+                        Attr attrNull = doc.createAttribute("is_null_allowed");
                         attrNull.setValue(isNullAllowed);
                         fieldName.setAttributeNode(attrNull);
 
@@ -401,17 +401,18 @@ public class DbManager {
                         ArrayList<Rec> recordList = column.getRecs();
                         sizeOfRecords = recordList.size();
                         //for each record in recordList
+                        int index = 0;
                         for(Rec record: recordList)
                         {
-                            Element recordElement = doc.createElement("Record");
+                            Element recordElement = doc.createElement("Record"+ index);
                             //get all the data entries in the record.
                             ArrayList<Entry> dataList = record.getAllEntries();
 
                             //for each data node in DataList
                             for (Entry data : dataList)
                             {
-                                Element dataElement = doc.createElement("Data");
-                                Attr attr = doc.createAttribute("Timestamp");
+                                Element dataElement = doc.createElement("data");
+                                Attr attr = doc.createAttribute("timestamp");
                                 attr.setValue(data.getTimeStamp());
                                 dataElement.appendChild(doc.createTextNode(data.getData()));
                                 dataElement.setAttributeNode(attr);
@@ -425,7 +426,7 @@ public class DbManager {
                     }
 
                     //create the attr that will store the number of records in the table.
-                    Attr attrRecordCount = doc.createAttribute("Record_Count");
+                    Attr attrRecordCount = doc.createAttribute("table_Record_Count");
                     attrRecordCount.setValue(sizeOfRecords + "");
                     rootElement.setAttributeNode(attrRecordCount);
 
