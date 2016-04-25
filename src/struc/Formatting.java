@@ -112,7 +112,7 @@ public class Formatting{
         Entry first = data.getLastEntry();
         val += String.format("%1$-"+maxLength+"s - ",first.getData());
         val += String.format("%1$-28s\n", first.getTimeStamp());
-        for(int i = values.size()-1; i >= 1;i --){
+        for(int i = values.size()-2; i >= 0;i --){
             val += String.format("->%1$-"+(maxLength-2)+"s - ",values.get(i).getData());
             val += String.format("%1$-28s\n",values.get(i).getTimeStamp());
         }
