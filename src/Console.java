@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +23,7 @@ import java.util.regex.Pattern;
 public class Console {
 
     //Decs
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     private DbManager manager;
     private final ArrayList<String> EMPTY_ARRAY = new ArrayList<>();
 
@@ -30,6 +32,20 @@ public class Console {
         Console console = new Console();
 
         boolean stop = false;
+
+        Console.print("Welcome to the YourSQL monitor.  Commands optionally end with ;\n" +
+                "Your YourSQL connection id is 78\n" +
+                "Server version: 0.0.2\n" +
+                "\n" +
+                "Copyright (c) 2016, Noracle and/or its affiliates. All rights reserved.\n" +
+                "\n" +
+                "Noracle is a registered trademark of Noracle Corporation and/or its\n" +
+                "affiliates. Other names may be trademarks of their respective\n" +
+                "owners.\n" +
+                "\n" +
+                "Type 'help;' or '-h' for help. None will be provided.");
+
+        System.out.println();
 
         try {
             while (!stop) {
@@ -52,9 +68,11 @@ public class Console {
     public boolean accept() throws IOException{
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print(" >\t");
+        System.out.print("YourSQL>\t");
         String input = br.readLine();
 
+        System.out.println();
+        System.out.println();
         capture(input);
 
         return input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("exit;");
@@ -66,26 +84,38 @@ public class Console {
         String first = input.split(" ")[0];
 
         Relation r;
+        long start;
+        long stop;
+        double time;
+        NumberFormat formatter;
 
         switch (first.toUpperCase()){
 
             case "SELECT":
+                start = System.currentTimeMillis();
                 r = select(input);
+                stop = System.currentTimeMillis() - start;
+                time = stop/1000;
                 if(r == null){
-                    System.out.println("No data to be returned");
+                    print("No data to be returned");
                     break;
                 }
                 print(select(input).toString());
-                System.out.println("SELECT execution time (0.00 sec)");
+                formatter = new DecimalFormat("#0.00");
+                print("(*) results returned in (" + formatter.format(time) + " sec)");
                 break;
             case "WSELECT":
+                start = System.currentTimeMillis();
                 r = select(input);
+                stop = System.currentTimeMillis() - start;
+                time = stop/1000;
                 if(r == null){
-                    System.out.println("No data to be returned");
+                    print("No data to be returned");
                     break;
                 }
-                print(select(input).toStringW());
-                System.out.println("SELECT execution time (0.01 sec)");
+                print(select(input).toStringW());;
+                formatter = new DecimalFormat("#0.00");
+                print("(*) results returned in (" + formatter.format(time) + " sec)");
                 break;
             case "INSERT":
                 insert(input);
@@ -119,15 +149,15 @@ public class Console {
                 break;
             case "HELP":
             case "-H":
-                System.out.println("Available commands: SELECT, WSELECT, INSERT, UPDATE, WUPDATE, DELETE, CREATE, DROP, " +
+                print("Available commands: SELECT, WSELECT, INSERT, UPDATE, WUPDATE, DELETE, CREATE, DROP, " +
                         "SHOW, LIST, LOAD, USE, SAVE, COMMIT");
                 break;
             case "QUIT":
             case "EXIT":
-                System.out.println("EXITING....");
+                print("Bye");
                 break;
             default:
-                System.out.println("Invalid command");
+                print("Invalid command");
 
         }
 
@@ -1149,7 +1179,7 @@ public class Console {
 
     }
 
-    private void print(String s){
+    private static void print(String s){
         System.out.println(s);
         System.out.println();
     }
