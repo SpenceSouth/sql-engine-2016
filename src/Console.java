@@ -68,7 +68,7 @@ public class Console {
     public boolean accept() throws IOException{
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.print("YourSQL>\t");
+        System.out.print("YourSQL>   ");
         String input = br.readLine();
 
         System.out.println();
@@ -154,6 +154,7 @@ public class Console {
                 break;
             case "QUIT":
             case "EXIT":
+            case "EXIT;":
                 print("Bye");
                 break;
             default:

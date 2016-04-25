@@ -100,7 +100,6 @@ public class DbManager {
 
     }
 
-
     public int size(){
         return databases.size();
     }
