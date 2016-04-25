@@ -123,7 +123,7 @@ public class Console {
                         "SHOW, LIST, LOAD, USE, SAVE, COMMIT");
                 break;
             case "QUIT":
-            case "EXIT;":
+            case "EXIT":
                 System.out.println("EXITING....");
                 break;
             default:
