@@ -1094,7 +1094,12 @@ public class Relation {
     }
     public String toStringW(){
         Formatting table = new Formatting();
-        return table.tableToStringW(new ArrayList<Col>(columns));
+        if(this.columns == null || this.columns.size() == 0){
+            return "";
+        }
+        else{
+            return table.tableToStringW(new ArrayList<Col>(columns));
+        }
     }
     public String toStringWSelect(){
 

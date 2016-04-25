@@ -1,17 +1,3 @@
-#TO DO LIST
-## Parser
-- Insert <-Ish
-- Update
-- Delete
-- Create <-Ish
-
-## Data structure Implementation
-- SelectW
-- Save & Load Debugging <-Ish
-
-## Outputting
-- SelectW <- Naga
-- Testing <- Slaven
 ## Purpose
 
 The purpose of this project is to modify code that was inherited from a previous semester of Data Modeling to fix their bugs and add data warehouse functionality.
