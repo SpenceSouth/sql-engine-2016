@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Prdct table_Column_Count="5" table_Record_Count="6">
+<Product table_Column_Count="5" table_Record_Count="6">
     <PNO is_null_allowed="false" restriction="1" restriction_2="0" type="VARCHAR">
         <Record0>
             <data timestamp="Wed Apr 06 14:20:49 EDT 2016">'P1'</data>
@@ -80,4 +80,4 @@
 			<data timestamp="Wed Apr 06 14:20:49 EDT 2016">27</data>
 		</Record5>
     </AVQTY>
-</Prdct>
+</Product>
