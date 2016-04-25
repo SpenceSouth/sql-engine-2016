@@ -47,16 +47,15 @@ public class Console {
 
         System.out.println();
 
-        try {
-            while (!stop) {
+        while(!stop) {
+            try {
                 stop = console.accept();
+            } catch (Exception ex) {
+                if (DEBUG)
+                    ex.printStackTrace();
+                else
+                    System.out.println("Unspecified syntax error occurred");
             }
-        }
-        catch (Exception ex){
-            if(DEBUG)
-                ex.printStackTrace();
-            else
-                System.out.println("Unspecified syntax error occurred");
         }
     }
 
@@ -285,6 +284,7 @@ public class Console {
             // Remove JOIN clause from input
             inputWithoutJoin = input.replaceAll(capture.trim(), "");
             inputWithoutJoin = inputWithoutJoin.replaceAll(table1, join.getName()).trim();
+            inputWithoutJoin = inputWithoutJoin.replaceAll("\\s+"," ");
 
             if(DEBUG)
                 print("New input: " + inputWithoutJoin);
